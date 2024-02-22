@@ -17,7 +17,7 @@ async function registerAsAmbulanceDriver(req, res) {
                 code: 400,
                 status: false,
                 message: error.details[0].message,
-                data: null
+                data: []
             });
         }
         
@@ -27,7 +27,7 @@ async function registerAsAmbulanceDriver(req, res) {
                 code: 400,
                 status: false,
                 message: 'Phone number already registered',
-                data: null
+                data: []
             });
         }
 
@@ -62,7 +62,7 @@ async function registerAsAmbulanceDriver(req, res) {
                 code: 404,
                 status: false,
                 message: 'User not found',
-                data: null
+                data: []
             });
         }
 
@@ -98,14 +98,14 @@ async function registerAsAmbulanceDriver(req, res) {
                 code: 201,
                 status: true,
                 message: 'Thanks for your registration please wait until approve your service by admin',
-                data: null
+                data: []
             });
         } else {
             return res.status(400).json({
                 code: 400,
                 status: false,
                 message: 'User is already registered as a Ambulance driver',
-                data: null
+                data: []
             });
         }
     } catch (ex) {
@@ -114,7 +114,7 @@ async function registerAsAmbulanceDriver(req, res) {
             code: 500,
             status: false,
             message: 'Internal server error',
-            data: null
+            data: []
         });
     }
 }
@@ -148,7 +148,7 @@ async function searchForAmbulanceDrivers(req, res) {
                 code: 404,
                 status: false,
                 message: 'No Ambulance Driver found',
-                data: null
+                data: []
             });
         }
 
@@ -181,7 +181,7 @@ async function searchForAmbulanceDrivers(req, res) {
             code: 500,
             status: false,
             message: 'Internal server error',
-            data: null
+            data: []
         });
     }
 }

@@ -280,7 +280,7 @@ async function searchForAnalysName(req, res) {
                 status: false,
                 code: 400,
                 message: 'Name is required and should not exceed 100 characters.',
-                data: null
+                data: []
             });
         }
 
@@ -292,7 +292,7 @@ async function searchForAnalysName(req, res) {
                 status: true,
                 code: 200,
                 message: 'No matching medical analysis found for the given name.',
-                data: null
+                data: []
             });
         }
 
@@ -307,7 +307,7 @@ async function searchForAnalysName(req, res) {
             status: false,
             code: 500,
             message: 'Internal server error.',
-            data: null
+            data: []
         });
     }
 }
@@ -322,7 +322,7 @@ async function searchForFiveMedicalAnalysisNames(req, res) {
                 status: false,
                 code: 400,
                 message: 'Exactly 5 medical analysis or lower than 5 are required.',
-                data: null
+                data: []
             });
         }
         // Build the query for ID search
@@ -431,7 +431,7 @@ async function searchForFiveMedicalAnalysisNames(req, res) {
             status: false,
             code: 500,
             message: 'Internal server error.',
-            data: null
+            data: []
         });
     }
 }

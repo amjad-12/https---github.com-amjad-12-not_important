@@ -14,7 +14,7 @@ async function getProfileUser(req, res) {
         status: false,
         code: 404,
         message: 'User not found.',
-        data: null
+        data: []
       });
     }
 
@@ -43,7 +43,7 @@ async function getProfileUser(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error.',
-      data: null
+      data: []
     });
   }
 }
@@ -70,7 +70,7 @@ async function editProfileUser(req, res) {
         status: false,
         code: 404,
         message: 'User not found.',
-        data: null
+        data: []
       });
     }
 
@@ -78,14 +78,14 @@ async function editProfileUser(req, res) {
     if (req.body.phone) {
       const existingUser = await User.findOne({ phone: req.body.phone, _id: { $ne: user._id } });
       if (existingUser) {
-        return res.status(409).json({ status: false, code: 409, message: 'Phone number is already registered', data: null });
+        return res.status(409).json({ status: false, code: 409, message: 'Phone number is already registered', data: [] });
       }
     }
     
     if (req.body.email) {
       const existingUser = await User.findOne({ email: req.body.email, _id: { $ne: user._id } });
       if (existingUser) {
-        return res.status(409).json({ status: false, code: 409, message: 'Email is already registered', data: null });
+        return res.status(409).json({ status: false, code: 409, message: 'Email is already registered', data: [] });
       }
     }
 
@@ -118,7 +118,7 @@ async function editProfileUser(req, res) {
 
   } catch (ex) {
     console.log(ex)
-    return res.status(500).json({ status: false, code: 500, message: 'Internal server error.', data: null });
+    return res.status(500).json({ status: false, code: 500, message: 'Internal server error.', data: [] });
   }
 }
 
@@ -130,7 +130,7 @@ async function createUser(req, res) {
         status: false,
         code: 400,
         message: error.details[0].message,
-        data: null
+        data: []
       });
     }
 
@@ -141,7 +141,7 @@ async function createUser(req, res) {
         status: false,
         code: 409,
         message: 'User already registered.',
-        data: null
+        data: []
       });
     }
 
@@ -164,7 +164,7 @@ async function createUser(req, res) {
       status: true,
       code: 201,
       message: 'User created successfully.',
-      data: null
+      data: []
     });
 
   } catch (ex) {
@@ -173,7 +173,7 @@ async function createUser(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error.',
-      data: null
+      data: []
     });
   }
 }
@@ -199,7 +199,7 @@ async function getSuggestionUsersByNumber(req, res) {
       if (user.length === 0 || !user) {
         return res.status(404).json({
           message: 'No users found matching the provided phone number.',
-          data: null,
+          data: [],
           status: false,
           code: 404
         });
@@ -226,7 +226,7 @@ async function getSuggestionUsersByNumber(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500
     });

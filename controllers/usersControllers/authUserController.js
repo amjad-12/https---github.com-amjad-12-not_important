@@ -10,7 +10,7 @@ async function authUser(req, res) {
         const { error } = validateAuthUser(req.body);
         if (error) {
             return res.status(400).json({
-                data: null,
+                data: [],
                 message: error.details[0].message,
                 status: false,
                 code: 400
@@ -20,7 +20,7 @@ async function authUser(req, res) {
         let user = await User.findOne({ phone: req.body.phone });
         if (!user) {
             return res.status(400).json({
-                data: null,
+                data: [],
                 message: 'Invalid email or password.',
                 status: false,
                 code: 400
@@ -30,7 +30,7 @@ async function authUser(req, res) {
         const validPassword = await bcrypt.compare(req.body.password, user.password);
         if (!validPassword) {
             return res.status(400).json({
-                data: null,
+                data: [],
                 message: 'Invalid email or password.',
                 status: false,
                 code: 400
@@ -70,7 +70,7 @@ async function authUser(req, res) {
         });
     } catch (ex) {
         return res.status(500).json({
-            data: null,
+            data: [],
             message: 'Internal server error.',
             status: false,
             code: 500

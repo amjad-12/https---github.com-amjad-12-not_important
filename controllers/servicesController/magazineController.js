@@ -47,7 +47,7 @@ async function getMagazinesPagination(req, res) {
                 status: false,
                 code: 400,
                 message: 'Invalid request parameters.',
-                data: null,
+                data: [],
             });
         }
 
@@ -85,7 +85,7 @@ async function getMagazinesPagination(req, res) {
             
             if (!doctor.specialization) {
                 // Skip magazine if no matching specialization found
-                return null;
+                return [];
             }
 
             let doctorName;
@@ -142,7 +142,7 @@ async function getMagazinesPagination(req, res) {
                 message: specializationId
                     ? 'No magazines found for the specified specialization.'
                     : 'No magazines found.',
-                data: null,
+                data: [],
             });
         }
 
@@ -158,7 +158,7 @@ async function getMagazinesPagination(req, res) {
             status: false,
             code: 500,
             message: 'Internal server error.',
-            data: null,
+            data: [],
         });
     }
 }

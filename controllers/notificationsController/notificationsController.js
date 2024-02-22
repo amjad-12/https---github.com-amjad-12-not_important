@@ -56,7 +56,7 @@ async function getUnReadedNotifications(req, res) {
             message: 'Failed to fetch notifications',
             code: 500,
             status: false,
-            data: null
+            data: []
         });
     }
 }
@@ -66,14 +66,14 @@ async function markNotificationAsReaded(req, res) {
         const notificationId = req.params.id;
         await Notification.findByIdAndUpdate(notificationId, { read: true }); res.json({
             code: 200,
-            status: true, message: 'Notification marked as read', data: null
+            status: true, message: 'Notification marked as read', data: []
         });
     } catch (error) {
         console.error('Error marking notification as read:', error);
         res.status(500).json({
             message: 'Failed to mark notification as read', 
             code: 500,
-            data: null,
+            data: [],
             status: true,
         });
     }
@@ -93,7 +93,7 @@ async function getMyPreviousNotification(req, res) {
     } catch (error) {
  
         res.status(500).json({             code: 500,
-            data: null,
+            data: [],
             status: true,message: 'Failed to fetch previous notifications' });
     }
 }

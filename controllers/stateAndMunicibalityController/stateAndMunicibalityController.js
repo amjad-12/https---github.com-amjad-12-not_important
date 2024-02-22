@@ -41,7 +41,7 @@ async function getAllStates(req, res) {
         console.error(error);
         res.status(500).json({
             message: 'Internal server error',
-            data: null,
+            data: [],
             status: false,
             code: 500
         });
@@ -57,7 +57,7 @@ async function getMunicibalitiesForState(req, res) {
         if (isNaN(mattricule)) {
             return res.status(400).json({
                 message: 'Invalid mattricule, must be a number',
-                data: null,
+                data: [],
                 status: false,
                 code: 400
             });
@@ -68,7 +68,7 @@ async function getMunicibalitiesForState(req, res) {
         if (!baladyiats) {
             return res.status(404).json({
                 message: 'Wilaya not found or has no baladyiats',
-                data: null,
+                data: [],
                 status: false,
                 code: 404
             });
@@ -104,7 +104,7 @@ async function getMunicibalitiesForState(req, res) {
         console.error(error);
         res.status(500).json({
             message: 'Internal server error',
-            data: null,
+            data: [],
             status: false,
             code: 500
         });

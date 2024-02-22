@@ -29,7 +29,7 @@ async function createDoctor(req, res) {
     if (error) return res.status(400).json({
       message: error.details[0].message,
       status: false,
-      data: null,
+      data: [],
       code: 400
     });
 
@@ -39,7 +39,7 @@ async function createDoctor(req, res) {
 
     let doctor = await Doctor.findOne({ $or: [{ email: req.body.email }, { phone: req.body.phone }] });
     if (doctor) {
-      return res.status(409).json({ message: 'Doctor already registered', status: false, code: 500, data: null });
+      return res.status(409).json({ message: 'Doctor already registered', status: false, code: 500, data: [] });
     }
 
 
@@ -90,7 +90,7 @@ async function createDoctor(req, res) {
     return res.status(201).json({ status: true, code: 201, message: 'signed up successfully',  data: {token} });
   } catch (error) {
     console.log(error)
-    return res.status(500).json({ message: 'Internal server error', status: false, code: 500, data: null });
+    return res.status(500).json({ message: 'Internal server error', status: false, code: 500, data: [] });
   }
 };
 
@@ -109,7 +109,7 @@ async function getProfileDoctor(req, res) {
         code: 404,
         status: true,
         message: "doctors not found",
-        data: null
+        data: []
       });
     }
 
@@ -125,7 +125,7 @@ async function getProfileDoctor(req, res) {
       code: 500,
       status: false,
       message: 'Internal server error.',
-      data: null
+      data: []
     });
   }
 }
@@ -223,7 +223,7 @@ async function getProfileDoctorShowUser(req, res) {
   } catch (error) {
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500
     });
@@ -323,7 +323,7 @@ async function getProfileDoctorLikeUser(req, res) {
   } catch (error) {
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500
     });
@@ -392,7 +392,7 @@ async function serachForDoctor(req, res) {
     if (doctors.length === 0) {
       return res.status(404).json({
         message: 'No doctors founded',
-        data: null,
+        data: [],
         status: false,
         code: 404
       });
@@ -419,7 +419,7 @@ async function serachForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500
     });
@@ -435,7 +435,7 @@ async function getDoctorsNearMe(req, res) {
     if (!lat || !lng || !specialization) {
       return res.status(400).json({
         message: 'Latitude, longitude, and specialization are required.',
-        data: null,
+        data: [],
         status: false,
         code: 400
       });
@@ -459,7 +459,7 @@ async function getDoctorsNearMe(req, res) {
     if (doctors.length === 0) {
       return res.status(404).json({
         message: 'No doctors found near this location.',
-        data: null,
+        data: [],
         status: false,
         code: 404
       });
@@ -512,7 +512,7 @@ async function getDoctorsNearMe(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error.',
-      data: null,
+      data: [],
       status: false,
       code: 500
     });
@@ -526,12 +526,12 @@ async function editProfileDoctor(req, res) {
 
     const doctorId = req.doctor._id;
     if (!doctorId) {
-      return res.status(400).json({ message: 'doctorId is required', status: false, data:null, code:500 })
+      return res.status(400).json({ message: 'doctorId is required', status: false, data:[], code:500 })
     }
 
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
-      return res.status(404).json({ message: 'Doctor not found', status: false, data:null, code:404 });
+      return res.status(404).json({ message: 'Doctor not found', status: false, data:[], code:404 });
     }
 
     const updates = req.body;
@@ -565,9 +565,9 @@ async function editProfileDoctor(req, res) {
 
     await doctor.save();
 
-    return res.status(200).json({ message: 'Doctor profile updated successfully', status: true, data:null, code:200 });
+    return res.status(200).json({ message: 'Doctor profile updated successfully', status: true, data:[], code:200 });
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error', status: false, data:null, code:500 });
+    return res.status(500).json({ message: 'Internal server error', status: false, data:[], code:500 });
   }
 }
 

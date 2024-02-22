@@ -26,7 +26,7 @@ async function editSchedule(req, res) {
 
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
-      return res.status(404).json({ message: 'Doctor not found', status: false, data:null, code:404 });
+      return res.status(404).json({ message: 'Doctor not found', status: false, data:[], code:404 });
     }
 
     // Update the schedule for specific days
@@ -62,7 +62,7 @@ async function editSchedule(req, res) {
       { new: true }
     );
 
-    res.status(200).json({ message: 'Your Schedule updated successfully', status: true, data:null, code:200 });
+    res.status(200).json({ message: 'Your Schedule updated successfully', status: true, data:[], code:200 });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -666,7 +666,7 @@ async function getCurrentSlot(req, res) {
     if (!doctor) {
       return res.status(404).json({
         message: 'No doctors found',
-        data: null,
+        data: [],
         status: false,
         code: 404
       });
@@ -765,7 +765,7 @@ async function getCurrentSlot(req, res) {
       status: false,
       code: 404,
       message: 'No available slots found in the next working days.',
-      data: null
+      data: []
     });
   } catch (error) {
     // Return a 500 Internal Server Error response if an unexpected error occurs
@@ -773,7 +773,7 @@ async function getCurrentSlot(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error',
-      data: null
+      data: []
     });
 
   }
@@ -792,7 +792,7 @@ async function getslots(req, res) {
     if (!doctor) {
       return res.status(404).json({
         message: 'No doctors found',
-        data: null,
+        data: [],
         status: false,
         code: 404
       });
@@ -897,10 +897,10 @@ async function getslots(req, res) {
                 nextDate: {
                   message: `the booking for ${formatDate(nextDate)} start in ${doctor.bookingStartTime} ${formatDate(previousDate)}`,
                   date: formatDate(nextDate),
-                  availableSlots: null,
-                  unavailableSlots: null,
-                  pendingAppointments: null,
-                  maxPatients: null
+                  availableSlots: [],
+                  unavailableSlots: [],
+                  pendingAppointments: [],
+                  maxPatients: []
                 },
                 // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
                 today: {
@@ -922,7 +922,7 @@ async function getslots(req, res) {
           status: true,
           code: 200,
           data: {
-            nextDate: null,
+            nextDate: [],
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
             today: {
               message: null,
@@ -993,7 +993,7 @@ async function getslots(req, res) {
           code: 200,
 
           data: {
-            nextDate: null,
+            nextDate: [],
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
             today: {
               maxPatients,
@@ -1022,14 +1022,14 @@ async function getslots(req, res) {
             nextDate: {
               message: `the booking for ${formatDate(nextDate)} start in ${doctor.bookingStartTime} ${formatDate(previousDate)}`,
               date: formatDate(nextDate),
-              availableSlots: null,
-              unavailableSlots: null,
-              pendingAppointments: null,
-              maxPatients: null
+              availableSlots: [],
+              unavailableSlots: [],
+              pendingAppointments: [],
+              maxPatients: []
 
             },
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
-            today: null
+            today: []
           }
 
           // previousDate: previousDate.toLocaleString(),
@@ -1044,7 +1044,7 @@ async function getslots(req, res) {
       status: false,
       code: 404,
       message: 'No available slots found in the next working days.',
-      data: null
+      data: []
     });
   } catch (error) {
     // Return a 500 Internal Server Error response if an unexpected error occurs
@@ -1052,7 +1052,7 @@ async function getslots(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error',
-      data: null
+      data: []
     });
 
   }
@@ -1065,10 +1065,10 @@ async function getslotsFake(req, res) {
         nextDate: {
           message: `the booking for 31/2/2024 start in 23:55 30/2/2024`,
           date: " 31/2/2024",
-          availableSlots: null,
-          unavailableSlots: null,
-          pendingAppointments: null,
-          maxPatients: null
+          availableSlots: [],
+          unavailableSlots: [],
+          pendingAppointments: [],
+          maxPatients: []
         },
         // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
         today: {
@@ -1095,7 +1095,7 @@ async function getslotsFake(req, res) {
         }
       },
       dataTwo: {
-        nextDate: null,
+        nextDate: [],
         // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
         today: {
           message: null,
@@ -1126,7 +1126,7 @@ async function getslotsFake(req, res) {
         }
       },
       dataThree: {
-        nextDate: null,
+        nextDate: [],
         // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
         today: {
           maxPatients: 15,
@@ -1155,13 +1155,13 @@ async function getslotsFake(req, res) {
         nextDate: {
           message: `the booking for 31/2/2024 start in 23:55 30/2/2024`,
           date: '31/02/2024',
-          availableSlots: null,
-          unavailableSlots: null,
-          pendingAppointments: null,
-          maxPatients: null
+          availableSlots: [],
+          unavailableSlots: [],
+          pendingAppointments: [],
+          maxPatients: []
         },
         // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
-        today: null
+        today: []
       }
     })
 
@@ -1171,7 +1171,7 @@ async function getslotsFake(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error',
-      data: null
+      data: []
     });
 
   }
@@ -1191,7 +1191,7 @@ async function makeAppointmentNew(req, res) {
     if (!doctor) {
       return res.status(404).json({
         message: 'No doctors found',
-        data: null,
+        data: [],
         status: false,
         code: 404
       });
@@ -1289,7 +1289,7 @@ async function makeAppointmentNew(req, res) {
                   status: false,
                   code: 400,
                   message: 'The slot is waiting for approval',
-                  data: null
+                  data: []
                 });
 
               }
@@ -1299,7 +1299,7 @@ async function makeAppointmentNew(req, res) {
                 status: false,
                 code: 400,
                 message: 'The slot is booked',
-                data: null
+                data: []
               });
 
             }
@@ -1325,7 +1325,7 @@ async function makeAppointmentNew(req, res) {
               status: true,
               code: 201,
               message: 'Appointment is created successfully',
-              data: null
+              data: []
             });
 
           }
@@ -1336,7 +1336,7 @@ async function makeAppointmentNew(req, res) {
             status: false,
             code: 500,
             message: 'Internal Server Error',
-            data: null
+            data: []
           });
 
         }
@@ -1389,7 +1389,7 @@ async function makeAppointmentNew(req, res) {
             status: false,
             code: 404,
             message: 'The slot number is more than the allowed slots',
-            data: null
+            data: []
           });
 
         }
@@ -1432,7 +1432,7 @@ async function makeAppointmentNew(req, res) {
                 status: false,
                 code: 400,
                 message: 'The slot is waiting for approval',
-                data: null
+                data: []
               });
 
             }
@@ -1442,7 +1442,7 @@ async function makeAppointmentNew(req, res) {
               status: false,
               code: 400,
               message: 'The slot is booked',
-              data: null
+              data: []
             });
 
           }
@@ -1467,7 +1467,7 @@ async function makeAppointmentNew(req, res) {
             status: true,
             code: 201,
             message: 'Appointment is created successfully',
-            data: null
+            data: []
           });
 
         }
@@ -1498,7 +1498,7 @@ async function makeAppointmentNew(req, res) {
           message: 'you can not booked',
           status: true,
           code: 400,
-          data: null
+          data: []
         });
 
       }
@@ -1509,7 +1509,7 @@ async function makeAppointmentNew(req, res) {
       status: false,
       code: 404,
       message: 'No available slots found in the next working days.',
-      data: null
+      data: []
     });
 
   } catch (error) {
@@ -1519,7 +1519,7 @@ async function makeAppointmentNew(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error',
-      data: null
+      data: []
     });
 
   }
@@ -1606,8 +1606,9 @@ async function bookAppointmentByDoctor(req, res) {
     }
 
     // Create new appointment
+    console.log(user,'my useeeeeeeeeeerrrrrrr')
     const appointment = new Appointment({
-      patient: doctorId,
+      patient: user[0]._id,
       doctor: doctorId,
       slot,
       appointmentDate,
@@ -1653,7 +1654,7 @@ async function previousDatesForDoctor(req, res) {
 
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient', data: null, code: 404, status: true });
+      return res.status(404).json({ message: 'No completed appointments found for the specified patient', data: [], code: 404, status: true });
     }
 
     // Map appointments to a more structured response
@@ -1679,7 +1680,7 @@ async function previousDatesForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -1734,7 +1735,7 @@ async function pendingDatesForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -1796,7 +1797,7 @@ async function futureDatesForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -1814,7 +1815,7 @@ async function currentDatesForDoctor(req, res) {
     if (!doctor) {
       return res.status(404).json({
         message: 'No doctors found',
-        data: null,
+        data: [],
         status: false,
         code: 404
       });
@@ -1985,7 +1986,7 @@ async function currentDatesForDoctor(req, res) {
           code: 200,
 
           data: {
-            nextDate: null,
+            nextDate: [],
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
             today: {
               maxPatients,
@@ -2014,14 +2015,14 @@ async function currentDatesForDoctor(req, res) {
             nextDate: {
               message: `the booking for ${formatDate(nextDate)} start in ${doctor.bookingStartTime} ${formatDate(previousDate)}`,
               date: formatDate(nextDate),
-              availableSlots: null,
-              unavailableSlots: null,
-              pendingAppointments: null,
-              maxPatients: null
+              availableSlots: [],
+              unavailableSlots: [],
+              pendingAppointments: [],
+              maxPatients: []
 
             },
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
-            today: null
+            today: []
           }
 
           // previousDate: previousDate.toLocaleString(),
@@ -2036,7 +2037,7 @@ async function currentDatesForDoctor(req, res) {
       status: false,
       code: 404,
       message: 'No available slots found in the next working days.',
-      data: null
+      data: []
     });
   } catch (error) {
     // Return a 500 Internal Server Error response if an unexpected error occurs
@@ -2044,7 +2045,7 @@ async function currentDatesForDoctor(req, res) {
       status: false,
       code: 500,
       message: 'Internal server error',
-      data: null
+      data: []
     });
 
   }
@@ -2184,7 +2185,7 @@ async function listCancelledDatesByUserForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2238,7 +2239,7 @@ async function listCancelledDatesByDoctorForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2292,7 +2293,7 @@ async function listCancelledDatesByUserIncorrectForDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2358,7 +2359,7 @@ async function listCancelledDatesByUser(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2419,7 +2420,7 @@ async function listCancelledDatesByDoctor(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2479,7 +2480,7 @@ async function previousDates(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2540,7 +2541,7 @@ async function pendingDates(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2695,7 +2696,7 @@ async function currentDates(req, res) {
     console.error(error);
     return res.status(500).json({
       message: 'Internal server error',
-      data: null,
+      data: [],
       status: false,
       code: 500,
     });
@@ -2807,7 +2808,7 @@ async function approveAppointmentByUser(req, res) {
       message: 'Appointment approved successfully',
       status: true,
       code: 200,
-      data: null
+      data: []
     });
   } catch (error) {
     console.error(error);
@@ -2815,7 +2816,7 @@ async function approveAppointmentByUser(req, res) {
       message: 'Internal server error',
       status: false,
       code: 500,
-      data: null
+      data: []
     });
   }
 }

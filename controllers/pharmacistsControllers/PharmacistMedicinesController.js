@@ -155,7 +155,7 @@ async function PharmacistMedicines(req, res) {
                 //     brand_name: my_brand_name
                 // };
                 const ourMedicine = await OurMedicine.findOne({ brand: { $regex: new RegExp(`^${my_brand_name}$`, 'i') } });
-                if (ourMedicine !== null) {
+                if (ourMedicine !== []) {
                     existInOurDb.push(my_brand_name);
                     insertDocuments.push({
                         updateOne: {

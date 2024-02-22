@@ -129,8 +129,8 @@ async function bookExamination(req, res) {
         doctor.bookedPatients.push({
             bookedNumber,
             user: userId,
-            doctor: null,
-            assistant: null,
+            doctor: [],
+            assistant: [],
             isDone: false, // Initial status
         });
         await doctor.save();

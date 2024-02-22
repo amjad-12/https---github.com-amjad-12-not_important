@@ -23,7 +23,7 @@ async function getSpecializationSuggestionsWithIcon(req, res) {
         if (!specializations || specializations.length === 0) {
             return res.status(404).json({
                 message: 'No specializations found',
-                data: null,
+                data: [],
                 status: false,
                 code: 404
             });
@@ -52,7 +52,7 @@ async function getSpecializationSuggestionsWithIcon(req, res) {
         console.error(error);
         res.status(500).json({
             message: 'Internal server error',
-            data: null,
+            data: [],
             status: false,
             code: 500
         });
@@ -75,7 +75,7 @@ async function addSpecializationWithIcon(req, res) {
         if (existingSpecialization) {
             return res.status(400).json({
                 message: 'Specialization names already exist',
-                data: null,
+                data: [],
                 status: false,
                 code: 400
             });
@@ -102,7 +102,7 @@ async function addSpecializationWithIcon(req, res) {
         console.error(error);
         res.status(500).json({
             message: 'Internal server error',
-            data: null,
+            data: [],
             status: false,
             code: 500
         });
@@ -117,7 +117,7 @@ async function getAllSpecializationWithIcon(req, res) {
         if (!specializations || specializations.length === 0) {
             return res.status(404).json({
                 message: 'No specializations found',
-                data: null,
+                data: [],
                 status: false,
                 code: 404
             });
@@ -161,7 +161,7 @@ async function getAllSpecializationWithIcon(req, res) {
         console.error(error);
         res.status(500).json({
             message: 'Internal server error',
-            data: null,
+            data: [],
             status: false,
             code: 500
         });
@@ -175,7 +175,7 @@ async function getAllSpecializationWithoutIcon(req, res) {
         if (!specializations || specializations.length === 0) {
             return res.status(404).json({
                 message: 'No specializations found',
-                data: null,
+                data: [],
                 status: false,
                 code: 404
             });
@@ -216,7 +216,7 @@ async function getAllSpecializationWithoutIcon(req, res) {
         console.error(error);
         res.status(500).json({
             message: 'Internal server error',
-            data: null,
+            data: [],
             status: false,
             code: 500
         });

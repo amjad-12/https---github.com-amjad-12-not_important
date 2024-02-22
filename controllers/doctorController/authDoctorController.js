@@ -14,7 +14,7 @@ async function loginDoctor(req, res) {
     if (error) return res.status(400).json({
       message: error.details[0].message,
       status: false,
-      data: null, 
+      data: [], 
       code:400
     });
 
@@ -22,7 +22,7 @@ async function loginDoctor(req, res) {
     if (!doctor) return res.status(400).json({
       message: 'Invalid email or password.',
       status: false,
-      data: null, 
+      data: [], 
       code:400
     });
 
@@ -30,7 +30,7 @@ async function loginDoctor(req, res) {
     if (!validPassword) return res.status(400).json({
       message: 'Invalid email or password.',
       status: false,
-      data: null, 
+      data: [], 
       code:400
     });
     const token = doctor.generateAuthToken();

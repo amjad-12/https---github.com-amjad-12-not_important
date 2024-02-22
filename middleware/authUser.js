@@ -9,7 +9,7 @@ module.exports = function (req, res, next) {
         status: false,
         code: 401,
         message: 'Access denied. No token provided.',
-        data: null
+        data: []
     });
 
 
@@ -27,7 +27,7 @@ module.exports = function (req, res, next) {
             status: false,
             code: 400,
             message: 'Invalid token.',
-            data: null
+            data: []
         });
 
     }

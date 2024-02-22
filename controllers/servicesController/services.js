@@ -31,7 +31,7 @@ async function getMyRegisteredServices(req, res) {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ code: 404, data: null, status: false , message: 'User not found'  });
+            return res.status(404).json({ code: 404, data: [], status: false , message: 'User not found'  });
         }
 
         const servicesData = [];
@@ -63,7 +63,7 @@ async function getMyRegisteredServices(req, res) {
             code: 500,
             status: false,
             message: 'Internal server error',
-            data: null 
+            data: [] 
         });
     }
 }
@@ -96,7 +96,7 @@ async function getMyProfileServiceInternal(userId, serviceName) {
                 userProfile = await AmbulanceDriver.findById(serviceData.service._id).select('isActive isConfirmed');
                 break;
             default:
-                return {  code: 404, data: null, status: false , message: 'Invalid service name' };
+                return {  code: 404, data: [], status: false , message: 'Invalid service name' };
         }
 
         return { status: true, data: userProfile , message: 'data retrived successfully', code: 200 };
@@ -119,7 +119,7 @@ async function getMyProfileService(req, res) {
         // });
 
         if (!user) {
-            return res.status(404).json({ code: 404, data: null, status: false , message: 'User not found'  });
+            return res.status(404).json({ code: 404, data: [], status: false , message: 'User not found'  });
         }
 
 
@@ -130,7 +130,7 @@ async function getMyProfileService(req, res) {
 
         if (!serviceData) {
             
-            return res.status(404).json({ status: false, data: null, message: `User is not registered in the ${serviceName} service`, code: 404 });
+            return res.status(404).json({ status: false, data: [], message: `User is not registered in the ${serviceName} service`, code: 404 });
         }
 
         let userProfile;
@@ -148,7 +148,7 @@ async function getMyProfileService(req, res) {
             //     userProfile = await OtherServiceType.findById(serviceData.service._id);
             //     break;
             default:
-                return res.status(404).json({ status: false, data: null, message: `User is not registered in the ${serviceName} service`, code: 404 });
+                return res.status(404).json({ status: false, data: [], message: `User is not registered in the ${serviceName} service`, code: 404 });
         }
 
 
@@ -197,7 +197,7 @@ async function getMyProfileService(req, res) {
             code: 500,
             status: false,
             message: 'Internal server error',
-            data: null
+            data: []
         });;
     }
 }
@@ -214,7 +214,7 @@ async function toggleStatusOfProfileService(req, res) {
         // });
 
         if (!user) {
-            return res.status(404).json({ code: 404, data: null, status: false , message: 'User not found'  });
+            return res.status(404).json({ code: 404, data: [], status: false , message: 'User not found'  });
         }
 
 
@@ -224,7 +224,7 @@ async function toggleStatusOfProfileService(req, res) {
 
 
         if (!serviceData) {
-            return res.status(404).json({ status: false, data: null, message: `User is not registered in the ${serviceName} service`, code: 404 });
+            return res.status(404).json({ status: false, data: [], message: `User is not registered in the ${serviceName} service`, code: 404 });
         }
 
         let userProfile;
@@ -246,7 +246,7 @@ async function toggleStatusOfProfileService(req, res) {
             //     userProfile = await OtherServiceType.findById(serviceData.service._id);
             //     break;
             default:
-                return res.status(404).json({ status: false, data: null , code: 404, message: `invalid ${serviceName}` });
+                return res.status(404).json({ status: false, data: [] , code: 404, message: `invalid ${serviceName}` });
         }
 
         let filteredUserProfile = userProfile.toObject(); // Convert Mongoose document to plain JavaScript object
@@ -273,7 +273,7 @@ async function toggleStatusOfProfileService(req, res) {
             code: 500,
             status: false,
             message: 'Internal server error',
-            data: null
+            data: []
         });
     }
 }
@@ -288,7 +288,7 @@ async function deleteServiceOfRegister(req, res) {
 
         // Check if the user exists
         if (!user) {
-            return res.status(404).json({ message: 'User not found',data: null, status: false, code:404  });
+            return res.status(404).json({ message: 'User not found',data: [], status: false, code:404  });
         }
 
         // Find the service entry in the registeredServices array
@@ -297,7 +297,7 @@ async function deleteServiceOfRegister(req, res) {
 
         // Check if the service is registered
         if (serviceIndex === -1) {
-            return res.status(404).json({ message: 'Service not found in registered services',data: null, status: false, code:404 });
+            return res.status(404).json({ message: 'Service not found in registered services',data: [], status: false, code:404 });
         }
 
         // Get the serviceName to determine which model to use
@@ -320,13 +320,13 @@ async function deleteServiceOfRegister(req, res) {
                 break;
             // Add other cases for additional services as needed
             default:
-                return res.status(400).json({ message: 'Invalid service name',data: null, status: false, code:400  });
+                return res.status(400).json({ message: 'Invalid service name',data: [], status: false, code:400  });
         }
 
-        return res.status(200).json({ message: 'Service deleted successfully',data: null, status: true, code:200  });
+        return res.status(200).json({ message: 'Service deleted successfully',data: [], status: true, code:200  });
     } catch (error) {
         console.error('Error deleting service:', error);
-        return res.status(500).json({ message: 'Internal server error', data: null, status: false, code:500  });
+        return res.status(500).json({ message: 'Internal server error', data: [], status: false, code:500  });
     }
 }
 
@@ -336,11 +336,11 @@ async function editMyServiceStateAndMunicipality(req, res) {
         const language = req.headers['language'];
 
         if (!req.body.state) {
-            return res.status(404).json({status: false, data: null , code: 404,  message: 'State is required' });
+            return res.status(404).json({status: false, data: [] , code: 404,  message: 'State is required' });
         }
 
         if (!req.body.municipality) {
-            return res.status(404).json({status: false, data: null , code: 404,  message: 'Municipality is required' });
+            return res.status(404).json({status: false, data: [] , code: 404,  message: 'Municipality is required' });
         }
 
         const userId = req.user._id
@@ -348,7 +348,7 @@ async function editMyServiceStateAndMunicipality(req, res) {
 
 
         if (!user) {
-            return res.status(404).json({status: false, data: null , code: 404,  message: 'User not found' });
+            return res.status(404).json({status: false, data: [] , code: 404,  message: 'User not found' });
         }
 
         const serviceData = user.registeredServices.find(service =>
@@ -356,7 +356,7 @@ async function editMyServiceStateAndMunicipality(req, res) {
         );
 
         if (!serviceData) {
-            return res.status(404).json({status: false, data: null , code: 404,  message: `User is not registered in the service` });
+            return res.status(404).json({status: false, data: [] , code: 404,  message: `User is not registered in the service` });
         }
 
         let userProfileService
@@ -375,11 +375,11 @@ async function editMyServiceStateAndMunicipality(req, res) {
             //     userProfile = await OtherServiceType.findById(serviceData.service._id);
             //     break;
             default:
-                return res.status(400).json({status: false, data: null , code: 404,  message: 'Invalid service name' });
+                return res.status(400).json({status: false, data: [] , code: 404,  message: 'Invalid service name' });
         }
 
         if (!userProfileService) {
-            return res.status(400).json({status: false, data: null , code: 404,  message: 'The service details not stored' });
+            return res.status(400).json({status: false, data: [] , code: 404,  message: 'The service details not stored' });
         }
 
 
@@ -391,13 +391,13 @@ async function editMyServiceStateAndMunicipality(req, res) {
         const stateData = getWilayaByCode(stateMattricule)
         
         if (!stateData) {
-            return res.status(404).json({status: false, data: null , code: 404,  message: `State is not correct` });
+            return res.status(404).json({status: false, data: [] , code: 404,  message: `State is not correct` });
         }
 
         const municipalityData = getBaladyiatsForWilaya(stateMattricule)
 
         if (!municipalityData) {
-            return res.status(404).json({status: false, data: null , code: 404,  message: `Municipality is not correct` });
+            return res.status(404).json({status: false, data: [] , code: 404,  message: `Municipality is not correct` });
         }
 
 
@@ -450,7 +450,7 @@ async function editMyServiceStateAndMunicipality(req, res) {
             code: 500,
             status: false,
             message: 'Internal server error',
-            data: null
+            data: []
         });
     }
 }

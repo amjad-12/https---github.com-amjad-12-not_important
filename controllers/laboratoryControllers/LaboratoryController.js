@@ -111,7 +111,7 @@ async function serachForLaboratory(req, res) {
 
     if (laboratories.length === 0) {
       return res.status(404).json({
-        data: null,
+        data: [],
         message: 'No laboratories found',
         code: 404,
         status: false
@@ -151,7 +151,7 @@ async function serachForLaboratory(req, res) {
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      data: null,
+      data: [],
       message: 'Internal server error',
       code: 500,
       status: false
@@ -169,7 +169,7 @@ async function getLaboratoriesNearMe(req, res) {
         code: 400,
         status: false,
         message: 'Latitude and longitude are required.',
-        data: null
+        data: []
       });
     }
 
@@ -192,7 +192,7 @@ async function getLaboratoriesNearMe(req, res) {
         code: 404,
         status: false,
         message: 'No laboratories found near this location.',
-        data: null
+        data: []
       });
     }
 
@@ -241,7 +241,7 @@ async function getLaboratoriesNearMe(req, res) {
       code: 500,
       status: false,
       message: 'Internal server error.',
-      data: null
+      data: []
     });
   }
 }
@@ -259,7 +259,7 @@ async function getLaboratoryProfileForUser(req, res){
               code: 404,
               status: false,
               message: 'Laboratory not found.',
-              data: null
+              data: []
           });
       }
 
@@ -299,7 +299,7 @@ async function getLaboratoryProfileForUser(req, res){
           code: 500,
           status: false,
           message: 'Internal server error.',
-          data: null
+          data: []
       });
   }
 }
