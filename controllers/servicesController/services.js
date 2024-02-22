@@ -278,6 +278,58 @@ async function toggleStatusOfProfileService(req, res) {
     }
 }
 
+async function deleteServiceOfRegister(req, res) {
+    try {
+        const userId = req.user._id; // Assuming user ID is available in request
+        const { serviceId } = req.params;
+
+        // Find the user
+        const user = await User.findById(userId);
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).json({ message: 'User not found',data: null, status: false, code:404  });
+        }
+
+        // Find the service entry in the registeredServices array
+        const serviceIndex = user.registeredServices.findIndex(service => service.id.toString() === serviceId);
+
+
+        // Check if the service is registered
+        if (serviceIndex === -1) {
+            return res.status(404).json({ message: 'Service not found in registered services',data: null, status: false, code:404 });
+        }
+
+        // Get the serviceName to determine which model to use
+        const serviceName = user.registeredServices[serviceIndex].serviceName;
+        const serviceIdInServiceCollection = user.registeredServices[serviceIndex].service;
+
+        // Remove the service from the registeredServices array
+        user.registeredServices.splice(serviceIndex, 1);
+
+        // Save the user after removing the service
+        await user.save();
+
+        // Delete the service from its respective collection
+        switch (serviceName) {
+            case 'BloodDonor':
+                await BloodDonor.findByIdAndDelete(serviceIdInServiceCollection);
+                break;
+            case 'ambulance':
+                await AmbulanceDriver.findByIdAndDelete(serviceIdInServiceCollection);
+                break;
+            // Add other cases for additional services as needed
+            default:
+                return res.status(400).json({ message: 'Invalid service name',data: null, status: false, code:400  });
+        }
+
+        return res.status(200).json({ message: 'Service deleted successfully',data: null, status: true, code:200  });
+    } catch (error) {
+        console.error('Error deleting service:', error);
+        return res.status(500).json({ message: 'Internal server error', data: null, status: false, code:500  });
+    }
+}
+
 async function editMyServiceStateAndMunicipality(req, res) {
     try {
         const { serviceId } = req.params;
@@ -408,5 +460,6 @@ module.exports = {
     getMyRegisteredServices,
     getMyProfileService,
     toggleStatusOfProfileService,
-    editMyServiceStateAndMunicipality
+    editMyServiceStateAndMunicipality,
+    deleteServiceOfRegister
 }

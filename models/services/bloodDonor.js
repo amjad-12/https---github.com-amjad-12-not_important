@@ -95,24 +95,12 @@ function validateBloodDonor(bloodDonor) {
     const schema = {
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
-        // municipality: Joi.object({
-        //     code: Joi.number().required(),
-        //     name: Joi.string().required(),
-        //     name_en: Joi.string().required(),
-        //     name_ar: Joi.string().required(),
-        // }).required(),
-        // state: Joi.object({
-        //     name: Joi.string().required(),
-        //     name_en: Joi.string().required(),
-        //     name_ar: Joi.string().required(),
-        //     mattricule: Joi.number().required(),
-        // }).required(),
+
         municipality: Joi.string().required(),
         state: Joi.string().required(),
         phone: Joi.string().required(),
         bloodType: Joi.string().valid('A+', 'A-', 'AB-', 'AB+', 'O+', 'O-', 'B-', 'B+').required(),
-        // personalIdentificationImage: Joi.string().required(),
-        // Add validation for other blood donor fields here
+
     };
 
     return Joi.validate(bloodDonor, schema);

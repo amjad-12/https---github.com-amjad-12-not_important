@@ -8,5 +8,6 @@ router.get('/me', [authUser, user], servicesController.getMyRegisteredServices)
 router.get('/:serviceName/profile',  [authUser, user], servicesController.getMyProfileService)
 router.put('/:serviceName/toggle-status', [authUser, user], servicesController.toggleStatusOfProfileService)
 router.put('/editServiceLocation/:serviceId', [authUser, user], servicesController.editMyServiceStateAndMunicipality)
+router.delete('/delete/:serviceId', [authUser, user], servicesController.deleteServiceOfRegister)
 
 module.exports = router;
