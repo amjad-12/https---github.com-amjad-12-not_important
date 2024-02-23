@@ -2,7 +2,8 @@ const config = require('config')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
 const Joi = require('joi')
-
+require('dotenv').config();
+const private_key = process.env.med_jwtPrivateKey
 const daySchema = new mongoose.Schema({
     dayOfWeek: {
         type: String,
@@ -164,7 +165,7 @@ const doctorSchema = new mongoose.Schema({
 
 
 doctorSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id: this._id, isDoctor: this.isDoctor }, config.get('jwtPrivateKey'))
+    const token = jwt.sign({ _id: this._id, isDoctor: this.isDoctor }, private_key)
     return token
 }
 

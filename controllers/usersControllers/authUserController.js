@@ -48,7 +48,7 @@ async function authUser(req, res) {
             }
         }
         
-        sendPushNotification(fcmToken, '6570d7422bc6e7b98ff715c1',user._id, 'amjad is', 'we want it to work')
+        // sendPushNotification(fcmToken, '6570d7422bc6e7b98ff715c1',user._id, 'amjad is', 'we want it to work')
 
         const token = user.generateAuthToken();
 

@@ -2,7 +2,8 @@ const config = require('config')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
 const Joi = require('joi')
-
+require('dotenv').config();
+const private_key = process.env.med_jwtPrivateKey
 const userSchema = new mongoose.Schema({
     first_name: {
         type: String,
@@ -121,7 +122,7 @@ userSchema.virtual('age').get(function () {
 // Here we put this method in the schema to make it easier 
 // to add more more properties in the payload 
 userSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id: this._id, isUser: this.isUser }, config.get('jwtPrivateKey'))
+    const token = jwt.sign({ _id: this._id, isUser: this.isUser }, private_key)
     return token
 }
 

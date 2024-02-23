@@ -2,7 +2,8 @@ const config = require('config')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
 const Joi = require('joi')
-
+require('dotenv').config();
+const private_key = process.env.med_jwtPrivateKey
 const assistantDoctorSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -41,7 +42,7 @@ assistantDoctorSchema.methods.generateAuthToken = function () {
         registeredByDoctor: this.registeredByDoctor,
         examControl: this.examControl,
         bookControl: this.bookControl
-    }, config.get('jwtPrivateKey'))
+    }, private_key)
     return token
 }
 

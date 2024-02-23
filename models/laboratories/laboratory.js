@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
 const Joi = require('joi')
 
-
+require('dotenv').config();
+const private_key = process.env.med_jwtPrivateKey
 const municipalitySchema = new mongoose.Schema({
     code: {
         type: Number,
@@ -135,7 +136,7 @@ const laboratorySchema = new mongoose.Schema({
 });
 
 laboratorySchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id: this._id, isLaboratory: this.isLaboratory }, config.get('jwtPrivateKey'))
+    const token = jwt.sign({ _id: this._id, isLaboratory: this.isLaboratory }, private_key)
     return token
 }
 
