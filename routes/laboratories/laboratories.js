@@ -29,7 +29,8 @@ const storage = multer.diskStorage({
   });
   
   const upload = multer({ storage });
-
+  
+  router.post('/upload-analys-file', [authLaboratory, laboratory], upload.single('file'),  medicalAnalys.uploadAnalysFile)
 
 router.post('/create-laboratory', laboratoryController.createLaboratory)
 router.get('/profile-laboratory', [authLaboratory, laboratory], laboratoryController.getLaboratoryProfile)
@@ -50,8 +51,9 @@ router.post('/getUpToFiveMedicalAnalysNames', [authUser, user],  medicalAnalys.s
 router.post('/getNameMedicalAnalys', [authUser, user], medicalAnalys.searchForAnalysName)
 router.get('/get-my-chosen-medical-analys', [authLaboratory, laboratory], medicalAnalys.getMyChosenAnalysisForLaboratory)
 router.delete('/delete-chosen-medical-analysis/:medicalAnalysisId',[authLaboratory, laboratory], medicalAnalys.deleteMyChosenMedicalAnalysForLaboratory )
-router.post('/upload-analys-file', [authLaboratory, laboratory], upload.single('file'),  medicalAnalys.uploadAnalysFile)
-router.get('/get-user-analysis-files', [authUser, user], medicalAnalys.getAnalysisFilesForUser)
+router.get('/get-user-analysis-files',  medicalAnalys.getAnalysisFilesForUser)
+router.get('/download-analys-file/:fileId', [authUser, user], medicalAnalys.downloadAnalysFile)
+// router.get('/get-user-analysis-files', [authUser, user], medicalAnalys.getAnalysisFilesForUser)
 // router.get('/searchForLaboratory', [authUser, user], laboratoryController.serachForLaboratory)
 router.get('/searchForLaboratory', [authUser, user], laboratoryController.serachForLaboratory)
 router.post('/laboratories-near-me', [authUser, user],  laboratoryController.getLaboratoriesNearMe)

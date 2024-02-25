@@ -8,28 +8,28 @@ const fileSchema = new mongoose.Schema({
     required: true,
   },
   userInfo: {
-    first_name:{
-        type: String,
-        required: true,
-        trim: true,
+    first_name: {
+      type: String,
+      required: true,
+      trim: true,
     },
     last_name: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
     age: {
-        type: Number,
-        // \\required: true,
-        min: 0,
-        max: 200
+      type: Number,
+      // \\required: true,
+      min: 0,
+      max: 200
     },
     gender: {
-        type: String,
-        required: true,
-        enum: ['male', 'female']
+      type: String,
+      required: true,
+      enum: ['male', 'female']
     }
-},
+  },
   laboratoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Laboratory',

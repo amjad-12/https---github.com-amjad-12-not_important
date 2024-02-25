@@ -7,6 +7,7 @@ const { User } = require('../../models/users/user')
 const fs = require('fs');
 const path = require('path');
 
+
 // async function createMedicalAnalys(req, res) {
 //     try {
 //         // Validate the request body using Joi
@@ -416,7 +417,7 @@ async function searchForFiveMedicalAnalysisNames(req, res) {
             _id: labId,
             labName: labResults[labId].labName,
             medicalNamesHave: labResults[labId].medicalNamesHave,
-            medicalNamesDontHave: labResults[labId].medicalNamesDontHave, 
+            medicalNamesDontHave: labResults[labId].medicalNamesDontHave,
             all: labResults[labId].all,
         }));
 
@@ -491,40 +492,111 @@ async function uploadAnalysFile(req, res) {
 }
 
 async function getAnalysisFilesForUser(req, res) {
+    // const userId = req.user._id; // Assuming user ID is available in the request
+    const userId = '65d86ab99706b6855a9cc9fe'; // Assuming user ID is available in the request
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
     try {
-        const { page = 1 } = req.query;
-        const perPage = 3;
+        const files = await File.find({ userId })
+            .populate('laboratoryId', 'name ') // Populate laboratory name
+            .select('file.originalName laboratoryId time ')
+            .limit(limit)
+            .skip((page - 1) * limit);
 
-        const userId = req.user._id;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const analysisFiles = await AnalysisFile.find({ userId })
-            .sort({ createdAt: -1 }) // Sort by newest first
-            .skip((page - 1) * perPage)
-            .limit(perPage)
-            .populate({
-                path: 'laboratoryId',
-                select: 'nameArabic nameFrance', // Add other fields as needed
-            });
-
-        // Map analysisFiles to include the full path of each file
-        const analysisFilesWithFullPath = analysisFiles.map(file => ({
-            ...file.toObject(),
-            file: {
-                ...file.file.toObject(),
-                fullPath: path.resolve(file.file.path),
-            },
-        }));
-
-        return res.status(200).json({ analysisFiles: analysisFilesWithFullPath });
+        return res.status(200).json({
+            status: true,
+            data: files,
+            code: 200,
+            message: 'User files retrieved successfully.',
+        });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error.' });
+        console.error('Error:', error);
+        return res.status(500).json({
+            status: false,
+            code: 500,
+            message: 'Internal server error.',
+        });
     }
+    // try {
+    //     const { page = 1 } = req.query;
+    //     const perPage = 3;
+
+    //     const userId = req.user._id;
+    //     const user = await User.findById(userId);
+
+    //     if (!user) {
+    //         return res.status(404).json({ message: 'User not found' });
+    //     }
+
+    //     const analysisFiles = await AnalysisFile.find({ userId })
+    //         .sort({ createdAt: -1 }) // Sort by newest first
+    //         .skip((page - 1) * perPage)
+    //         .limit(perPage)
+    //         .populate({
+    //             path: 'laboratoryId',
+    //             select: 'nameArabic nameFrance', // Add other fields as needed
+    //         });
+
+    //     // Map analysisFiles to include the full path of each file
+    //     const analysisFilesWithFullPath = analysisFiles.map(file => ({
+    //         ...file.toObject(),
+    //         file: {
+    //             ...file.file.toObject(),
+    //             fullPath: path.resolve(file.file.path),
+    //         },
+    //     }));
+
+    //     return res.status(200).json({ analysisFiles: analysisFilesWithFullPath });
+    // } catch (error) {
+    //     console.error(error);
+    //     return res.status(500).json({ message: 'Internal server error.' });
+    // }
+}
+
+async function downloadAnalysFile(req, res) {
+    const { fileId } = req.params; // Assuming file ID is available in the request
+    console.log(fileId)
+    File.findById(fileId)
+        .populate('laboratoryId', 'name')
+        .then(file => {
+            if (!file) {
+                return res.status(404).json({
+                    status: false,
+                    code: 404,
+                    message: 'File not found.',
+                });
+            }
+            console.log(file.file.path,'sdsds')
+
+            // const filePath = path.join(__dirname, 'AnalysFiles', 'pdf', file.file.path);
+            const filePath = file.file.path
+            console.log(filePath)
+            fs.exists(filePath, exists => {
+                if (!exists) {
+                    return res.status(404).json({
+                        status: false,
+                        code: 404,
+                        message: 'File not found on the server.',
+                    });
+                }
+
+                // Stream the file for download
+                res.setHeader('Content-disposition', `attachment; filename=${file.file.originalName}`);
+                res.setHeader('Content-type', 'application/pdf');
+                const fileStream = fs.createReadStream(filePath);
+                fileStream.pipe(res);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            return res.status(500).json({
+                status: false,
+                code: 500,
+                message: 'Internal server error.',
+            });
+        });
 }
 
 async function getMyChosenAnalysisForLaboratory(req, res) {
@@ -594,6 +666,7 @@ module.exports = {
     // deleteMedicalAnalys,
     // searchForMedicalAnalys,
     // searchForNameMedicalAnalys,
+    downloadAnalysFile,
     searchForFiveMedicalAnalysisNames,
     searchForAnalysName,
     addMedicalAnalysByAdmin,
