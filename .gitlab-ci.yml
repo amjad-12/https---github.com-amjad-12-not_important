@@ -1,0 +1,17 @@
+image: alpine
+
+stages:
+  - deployment
+
+deploy-master:
+  stage: deployment
+  before_script:
+      - apk add openssh-client
+      - eval $(ssh-agent -s)
+      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      - mkdir -p ~/.ssh
+      - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh deployer@65.109.83.20 -p 54322 "cd /www/wwwroot/backend-medsync && git stash && git stash clear  && git checkout master && git pull origin master && npm i && exit"
+  only:
+    - master
