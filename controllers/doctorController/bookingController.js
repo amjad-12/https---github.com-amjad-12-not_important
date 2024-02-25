@@ -672,18 +672,22 @@ async function getCurrentSlot(req, res) {
       });
     }
 
+
     // Get the current date and time
     const today = new Date();
+    today.setHours(today.getHours() + 1);
 
     // Get the current day name (e.g., 'Monday', 'Tuesday', etc.)
     const currentDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
-
+    console.log(today, 'today')
+    console.log(getDayName(today), 'dayyyy')
     // Assuming you have the doctor's schedule
     const doctorSchedule = doctor.schedule;
     // Check if the doctor is open on the current day
     const isDoctorOpen = doctorSchedule.some(day => day.dayOfWeek === currentDayName);
 
     const currentTime = new Date();
+    currentTime.setHours(currentTime.getHours() + 1);
 
     // Extract hours and minutes from the current time
     const currentHours = currentTime.getHours();
@@ -692,10 +696,10 @@ async function getCurrentSlot(req, res) {
     const currentDaySchedule = doctorSchedule.find(day => day.dayOfWeek === currentDayName);
 
 
-
     // Extract hours and minutes from the clinic closing time
     const [startBookingHours, startBookingMinutes] = doctor.bookingStartTime.split(':');
     const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+    console.log(currentTimeInMinutes, 'current time in minutes')
     const startBookingTimeInMinutes = parseInt(startBookingHours) * 60 + parseInt(startBookingMinutes);
 
     if (currentDaySchedule) {
@@ -705,18 +709,20 @@ async function getCurrentSlot(req, res) {
       // Convert all values to minutes for easier comparison
       const clinicClosingTimeInMinutes = parseInt(clinicClosingHours) * 60 + parseInt(clinicClosingMinutes);
       const clinicOpeningTimeInMinutes = parseInt(clinicOpeningHours) * 60 + parseInt(clinicOpeningMinutes);
-      if (currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) {
+      console.log(clinicOpeningTimeInMinutes, 'clinic openeing time in minutes')
+      console.log(clinicClosingTimeInMinutes, 'clinic closing time in minutes')
+      console.log(startBookingTimeInMinutes - 1440, 'start booking time in minutes')
+      if ((currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) || (currentDaySchedule && (currentTimeInMinutes <= clinicOpeningTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)))) {
 
-        // if (currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes) {
-        // Check if between startBookingTime and clinicClosingTime
-        // if (currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes < clinicClosingTimeInMinutes) {
 
-        // Generate available slots
+        console.log('pppppppppppppppppppppp')
         const startOfDay = new Date(today);
         startOfDay.setHours(0, 0, 0, 0);
 
         const endOfDay = new Date(today);
         endOfDay.setHours(23, 59, 59, 999);
+        console.log(startOfDay)
+        console.log(endOfDay)
 
         const bookedSlots = await Appointment.find({
           doctor: doctor._id,
@@ -726,8 +732,10 @@ async function getCurrentSlot(req, res) {
           },
         });
 
+
         // Sort appointments by slot number
         bookedSlots.sort((a, b) => a.slot - b.slot);
+
 
         let lastCompletedSlot = 0;
 
@@ -735,8 +743,6 @@ async function getCurrentSlot(req, res) {
         for (const appointment of bookedSlots) {
           if (appointment.completed) {
             lastCompletedSlot = appointment.slot;
-          } else {
-            break;
           }
         }
 
@@ -748,18 +754,9 @@ async function getCurrentSlot(req, res) {
             lastCompletedSlot,
           }
         });
-
         // } else {
       }
     }
-    // console.log(currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440), 'kgjfkgjfkjgkfjgkjfgkjfk')
-
-
-
-
-
-
-    // If the current day is not suitable, try to find available slots for the next working day
 
     return res.status(404).json({
       status: false,
@@ -783,6 +780,7 @@ async function getCurrentSlot(req, res) {
 
 async function getslots(req, res) {
   try {
+    console.log('asajskajskjaksjajskajskas')
     const { doctorId } = req.params;
 
     // Find the doctor based on the extracted doctor ID
@@ -821,9 +819,11 @@ async function getslots(req, res) {
 
     const currentDaySchedule = doctorSchedule.find(day => day.dayOfWeek === currentDayName);
 
+
     // Extract hours and minutes from the clinic closing time
     const [startBookingHours, startBookingMinutes] = doctor.bookingStartTime.split(':');
     const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+    console.log(currentTimeInMinutes, 'current time in minutes')
     const startBookingTimeInMinutes = parseInt(startBookingHours) * 60 + parseInt(startBookingMinutes);
 
     if (currentDaySchedule) {
@@ -833,7 +833,10 @@ async function getslots(req, res) {
       // Convert all values to minutes for easier comparison
       const clinicClosingTimeInMinutes = parseInt(clinicClosingHours) * 60 + parseInt(clinicClosingMinutes);
       const clinicOpeningTimeInMinutes = parseInt(clinicOpeningHours) * 60 + parseInt(clinicOpeningMinutes);
-      if (currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) {
+      console.log(clinicOpeningTimeInMinutes, 'clinic openeing time in minutes')
+      console.log(clinicClosingTimeInMinutes, 'clinic closing time in minutes')
+      console.log(startBookingTimeInMinutes - 1440, 'start booking time in minutes')
+      if ((currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) || (currentDaySchedule && (currentTimeInMinutes <= clinicOpeningTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)))) {
 
 
 
@@ -851,17 +854,25 @@ async function getslots(req, res) {
           },
         });
 
+        // Extract only the slot numbers for approved appointments
+        const approvedAppointmentsSlots = bookedSlots
+          .filter(appointment => appointment.approved)
+          .map(appointment => appointment.slot);
+
+        // Extract only the slot numbers for pending appointments
+        const pendingAppointments = bookedSlots
+          .filter(appointment => !appointment.approved)
+          .map(appointment => appointment.slot);
+
+        // Generate available slots
         const availableSlots = Array.from(
           { length: currentDaySchedule.maxPatients },
           (_, index) => index + 1
         ).filter(slot => !bookedSlots.some(appointment => appointment.slot === slot));
 
-        const unavailableSlots = Array.from(
-          { length: currentDaySchedule.maxPatients },
-          (_, index) => index + 1
-        ).filter(slot => bookedSlots.some(appointment => appointment.slot === slot));
+        // Filter unavailable slots to include only the ones where the appointments are approved
+        const unavailableSlots = approvedAppointmentsSlots;
 
-        const pendingAppointments = bookedSlots.filter(appointment => !appointment.approved);
 
         if (doctorSchedule.length > 1) {
           const nextAvailableDayInfo = getNextWorkingDay(today, doctorSchedule);
@@ -967,6 +978,7 @@ async function getslots(req, res) {
           },
         });
 
+
         // Calculate the date before the next working day
         const previousDate = new Date(nextDayStart.getTime() - 24 * 60 * 60 * 1000);
 
@@ -976,12 +988,19 @@ async function getslots(req, res) {
           (_, index) => index + 1
         ).filter(slot => !bookedSlotsNextDay.some(appointment => appointment.slot === slot));
 
-        const unavailableSlotsNextDay = Array.from(
-          { length: nextAvailableDayInfo.maxPatients },
-          (_, index) => index + 1
-        ).filter(slot => bookedSlotsNextDay.some(appointment => appointment.slot === slot));
+        // Extract only the slot numbers for pending appointments
+        const pendingAppointmentsNextDay = bookedSlotsNextDay
+          .filter(appointment => !appointment.approved)
+          .map(appointment => appointment.slot);
 
-        const pendingAppointmentsNextDay = bookedSlotsNextDay.filter(appointment => !appointment.approved);
+        // Extract only the slot numbers for approved appointments
+        const approvedAppointmentsNextDaySlots = bookedSlotsNextDay
+          .filter(appointment => appointment.approved)
+          .map(appointment => appointment.slot);
+
+        // Filter unavailable slots to include only the ones where the appointments are approved
+        const unavailableSlotsNextDay = approvedAppointmentsNextDaySlots;
+
 
         return res.json({
           // previousDate: previousDate.toLocaleString(),
@@ -1111,7 +1130,7 @@ async function getSlotsStatusForDoctorByToday(req, res) {
       const clinicClosingTimeInMinutes = parseInt(clinicClosingHours) * 60 + parseInt(clinicClosingMinutes);
       const clinicOpeningTimeInMinutes = parseInt(clinicOpeningHours) * 60 + parseInt(clinicOpeningMinutes);
       console.log('dsdsds')
-      if (currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) {
+      if ((currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) || (currentDaySchedule && (currentTimeInMinutes <= clinicOpeningTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)))) {
 
 
         const startOfDay = new Date(today);
@@ -1128,6 +1147,23 @@ async function getSlotsStatusForDoctorByToday(req, res) {
           },
         }).populate('patient', 'phone');
 
+
+
+
+        // Sort appointments by slot number
+        bookedSlots.sort((a, b) => a.slot - b.slot);
+
+
+        let lastCompletedSlot = 0;
+
+        // Find the last completed slot
+        for (const appointment of bookedSlots) {
+          if (appointment.completed) {
+            lastCompletedSlot = appointment.slot;
+          }
+        }
+
+
         // Prepare all slots with flags
         const allSlotsWithFlag = Array.from(
           { length: currentDaySchedule.maxPatients },
@@ -1141,18 +1177,25 @@ async function getSlotsStatusForDoctorByToday(req, res) {
             let phone = '';
             let appointmentDate = ''
             let timeOut = ''
+            let id = ''
 
             if (bookedSlot) {
-              status = bookedSlot.approved ? 'booked' : 'pending';
+              if (bookedSlot.approved) {
+                status = bookedSlot.completed ? 'completed' : 'booked';
+              } else {
+                status = 'pending';
+              }
+              // status = bookedSlot.approved ? 'booked' : 'pending';
               firstName = bookedSlot.patientFirstName;
               lastName = bookedSlot.patientLastName;
               age = bookedSlot.patientAge;
               timeOut = bookedSlot.bookingTimeout;
+              id = bookedSlot._id;
               phone = bookedSlot.patient.phone;
               appointmentDate = formatDate(bookedSlot.appointmentDate);
             }
 
-            return { slot, status, firstName, lastName, age, phone, appointmentDate, timeOut };
+            return { slot, status, firstName, lastName, age, phone, appointmentDate, timeOut, id };
           }
         );
 
@@ -1189,6 +1232,7 @@ async function getSlotsStatusForDoctorByToday(req, res) {
 
               data: {
                 allSlotsWithFlag,
+                lastCompletedSlot,
                 maxPatients: currentDaySchedule.maxPatients,
                 date: today.toLocaleDateString()
               }
@@ -1203,6 +1247,7 @@ async function getSlotsStatusForDoctorByToday(req, res) {
           code: 200,
           data: {
             allSlotsWithFlag,
+            lastCompletedSlot,
             maxPatients: currentDaySchedule.maxPatients,
             date: today.toLocaleDateString()
           }
@@ -1238,6 +1283,30 @@ async function getSlotsStatusForDoctorByToday(req, res) {
           },
         }).populate('patient', 'phone');
 
+
+        const bookedSlots = await Appointment.find({
+          doctor: doctor._id,
+          appointmentDate: {
+            $gte: nextDayStart,
+            $lt: nextDayEnd,
+          },
+        });
+
+        
+        // Sort appointments by slot number
+        bookedSlots.sort((a, b) => a.slot - b.slot);
+        
+
+        let lastCompletedSlot = 0;
+
+        // Find the last completed slot
+        for (const appointment of bookedSlots) {
+          if (appointment.completed) {
+            lastCompletedSlot = appointment.slot;
+          }
+        }
+
+
         // Prepare all slots with flags for the next day
         const allSlotsNextDayWithFlag = Array.from(
           { length: maxPatients },
@@ -1251,18 +1320,25 @@ async function getSlotsStatusForDoctorByToday(req, res) {
             let phone = '';
             let appointmentDate = ''
             let timeOut = ''
+            let id = ''
+
 
             if (bookedSlot) {
-              status = bookedSlot.approved ? 'booked' : 'pending';
+              if (bookedSlot.approved) {
+                status = bookedSlot.completed ? 'completed' : 'booked';
+              } else {
+                status = 'pending';
+              }
               firstName = bookedSlot.patientFirstName;
               lastName = bookedSlot.patientLastName;
               age = bookedSlot.patientAge;
               timeOut = bookedSlot.bookingTimeout;
               phone = bookedSlot.patient.phone;
+              id = bookedSlot._id;
               appointmentDate = formatDate(bookedSlot.appointmentDate);
             }
 
-            return { slot, status, firstName, lastName, age, phone, appointmentDate,timeOut };
+            return { slot, status, firstName, lastName, age, phone, appointmentDate, timeOut, id };
           }
         );
         return res.json({
@@ -1278,6 +1354,7 @@ async function getSlotsStatusForDoctorByToday(req, res) {
 
           data: {
             maxPatients,
+            lastCompletedSlot,
             allSlotsWithFlag: allSlotsNextDayWithFlag,
             date: nextDate.toLocaleDateString(),
 
@@ -1841,7 +1918,7 @@ async function bookAppointmentByDoctor(req, res) {
     // Check if the doctor exists
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
-      return res.status(404).json({ message: 'Doctor not found' });
+      return res.status(404).json({ message: 'Doctor not found', status: false, code: 404, data: [] });
     }
 
 
@@ -1849,18 +1926,18 @@ async function bookAppointmentByDoctor(req, res) {
     const dayName = getDayName(appointmentDate);
     const dayExists = doctor.schedule.some(day => day.dayOfWeek === dayName);
     if (!dayExists) {
-      return res.status(400).json({ message: `Doctor's schedule does not include ${dayName}` });
+      return res.status(400).json({ message: `Doctor's schedule does not include ${dayName}`, status: false, code: 404, data: [] });
     }
 
     // Find the maximum number of patients allowed for the specified day and slot
     const daySchedule = doctor.schedule.find(day => day.dayOfWeek === dayName);
     if (daySchedule.maxPatients <= 0) {
-      return res.status(400).json({ message: 'Maximum patients limit not set for this day' });
+      return res.status(400).json({ message: 'Maximum patients limit not set for this day', status: false, code: 404, data: [] });
     }
 
     // Check if the slot exceeds the maximum patients limit for the specified day
     if (slot > daySchedule.maxPatients) {
-      return res.status(400).json({ message: 'Slot exceeds maximum patients limit for this day' });
+      return res.status(400).json({ message: 'Slot exceeds maximum patients limit for this day', status: false, code: 404, data: [] });
     }
 
 
@@ -1869,7 +1946,7 @@ async function bookAppointmentByDoctor(req, res) {
     })
 
     if (!user || user.length === 0) {
-      return res.status(404).json({ message: 'User not found by phone' });
+      return res.status(404).json({ message: 'User not found by phone', status: false, code: 404, data: [] });
     }
 
     const startOfDay = new Date(appointmentDate);
@@ -1888,11 +1965,11 @@ async function bookAppointmentByDoctor(req, res) {
     });
 
     if (existingAppointment) {
-      return res.status(400).json({ message: 'Doctor already has an appointment at this slot on the given date' });
+      return res.status(400).json({ message: 'Doctor already has an appointment at this slot on the given date', status: false, code: 404, data: [] });
     }
 
     // Create new appointment
-    console.log(user, 'my useeeeeeeeeeerrrrrrr')
+    // console.log(user, 'my useeeeeeeeeeerrrrrrr')
     const appointment = new Appointment({
       patient: user[0]._id,
       doctor: doctorId,
@@ -1906,10 +1983,10 @@ async function bookAppointmentByDoctor(req, res) {
 
     await appointment.save();
 
-    return res.status(200).json({ message: 'Appointment booked successfully', appointment });
+    return res.status(200).json({ message: 'Appointment booked successfully', status: true, code: 200, data: [] });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Internal server error', status: false, code: 500, data: [] });
   }
 }
 
@@ -2188,6 +2265,9 @@ async function currentDatesForDoctor(req, res) {
 
         const pendingAppointments = bookedSlots.filter(appointment => !appointment.approved)
           .map(appointment => ({ slot: appointment.slot, status: 'pending' }));
+
+        const completedAppointments = bookedSlots.filter(appointment => appointment.completed)
+          .map(appointment => ({ slot: appointment.slot, status: 'completed' }));
         // const availableSlots = Array.from(
         //   { length: currentDaySchedule.maxPatients },
         //   (_, index) => index + 1
@@ -2204,7 +2284,7 @@ async function currentDatesForDoctor(req, res) {
         //   .map(appointment => ({ slot: appointment.slot, status: 'pending' }));
 
         // Combine and sort all slots based on slot number
-        const allSlots = [...availableSlots, ...pendingAppointments, ...unavailableSlots].sort((a, b) => a.slot - b.slot);
+        const allSlots = [...availableSlots, ...pendingAppointments, ...unavailableSlots, ...completedAppointments].sort((a, b) => a.slot - b.slot);
 
         return res.json({
           message: 'Appointments retrieved successfully for today',
@@ -2390,7 +2470,12 @@ async function completeFlagAppointmentByDoctor(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(404).json({ message: 'Appointment not found for the user or already completed' });
+      return res.status(404).json({
+        message: 'Appointment not found for the user or already completed',
+        status: false,
+        code: 404,
+        data: []
+      });
     }
 
     // Update the appointment to mark it as completed 
@@ -2400,9 +2485,10 @@ async function completeFlagAppointmentByDoctor(req, res) {
     await existingAppointment.save();
 
     return res.status(200).json({
-      message: 'Appointment canceled successfully',
+      message: 'Appointment completed successfully',
       status: true,
       code: 200,
+      data: []
     });
   } catch (error) {
     console.error(error);
@@ -3107,6 +3193,65 @@ async function approveAppointmentByUser(req, res) {
   }
 }
 
+async function analysAppointmentForDoctor(req, res) {
+  try {
+    const doctorId = req.doctor._id
+
+    // Fetch doctor's information
+    const doctor = await Doctor.findById(doctorId).select('nameEnglish');
+
+    // If doctor is not found, return 404
+    if (!doctor) {
+      return res.status(404).json({
+        status: 'error',
+        code: 404,
+        message: 'Doctor not found.',
+      });
+    }
+
+    // Use MongoDB aggregation pipeline to count appointment statuses
+    const counts = await Appointment.aggregate([
+      { $match: { doctor: new mongoose.Types.ObjectId(doctorId) } },
+      {
+        $group: {
+          _id: null,
+          completed: { $sum: { $cond: [{ $eq: ["$completed", true] }, 1, 0] } },
+          future: { $sum: { $cond: [{ $eq: ["$completed", false] }, 1, 0] } },
+          cancelled: { $sum: { $cond: [{ $eq: ["$cancelled", true] }, 1, 0] } },
+        },
+      },
+    ]);
+
+
+    // Check if counts array is empty
+    if (counts.length === 0) {
+      return res.status(404).json({
+        status: 'error',
+        code: 404,
+        message: 'No appointments found for the specified doctor.',
+      });
+    }
+
+    // Extract counts from the result                  
+    const { completed, future, cancelled } = counts[0];
+
+    // Send the response
+    return res.status(200).json({
+      status: 'success',
+      data: { completed, future, cancelled, name: doctor.nameEnglish },
+      code: 200,
+      message: 'Appointment status counts retrieved successfully.',
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({
+      status: 'error',
+      code: 500,
+      message: 'Internal server error.',
+    });
+  }
+}
+
 // Function to format the date as 'DD-MM-YYYY'
 function formatDate(date) {
   const day = date.getDate().toString().padStart(2, '0');
@@ -3142,7 +3287,8 @@ module.exports = {
   cancelAppointmentByDoctor,
   completeFlagAppointmentByDoctor,
   bookAppointmentByDoctor,
-  getSlotsStatusForDoctorByToday
+  getSlotsStatusForDoctorByToday,
+  analysAppointmentForDoctor
 }
 
 
