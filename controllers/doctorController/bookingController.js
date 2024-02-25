@@ -3196,18 +3196,20 @@ async function approveAppointmentByUser(req, res) {
 async function analysAppointmentForDoctor(req, res) {
   try {
     const doctorId = req.doctor._id
-
+    console.log(doctorId)
     // Fetch doctor's information
     const doctor = await Doctor.findById(doctorId).select('nameEnglish');
 
     // If doctor is not found, return 404
     if (!doctor) {
       return res.status(404).json({
-        status: 'error',
+        status: false,
         code: 404,
+        data: [],
         message: 'Doctor not found.',
       });
     }
+
 
     // Use MongoDB aggregation pipeline to count appointment statuses
     const counts = await Appointment.aggregate([
@@ -3225,10 +3227,11 @@ async function analysAppointmentForDoctor(req, res) {
 
     // Check if counts array is empty
     if (counts.length === 0) {
-      return res.status(404).json({
-        status: 'error',
-        code: 404,
+      return res.status(200).json({
+        status: true,
+        code: 200,
         message: 'No appointments found for the specified doctor.',
+        data: { completed:0, future:0, cancelled:0, name: doctor.nameEnglish },
       });
     }
 
@@ -3237,7 +3240,7 @@ async function analysAppointmentForDoctor(req, res) {
 
     // Send the response
     return res.status(200).json({
-      status: 'success',
+      status: true,
       data: { completed, future, cancelled, name: doctor.nameEnglish },
       code: 200,
       message: 'Appointment status counts retrieved successfully.',

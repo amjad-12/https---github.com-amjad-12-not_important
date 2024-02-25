@@ -114,7 +114,7 @@ router.put('/clearBookedPatients', [authDoctor, doctor], examinationController.c
 
 router.post('/add-specialization-with-icon',  [authAdmin, admin], upload.single('image'), specializationContoller.addSpecializationWithIcon)
 router.get('/get-all-specialization-with-icon',[authUser, user], specializationContoller.getAllSpecializationWithIcon)
-router.get('/get-all-specialization-doctor', specializationContoller.getAllSpecializationWithoutIcon)
+router.get('/get-all-specialization-doctor',  specializationContoller.getAllSpecializationWithoutIcon)
 // router.get('/get-suggestion-specialization-with-icon/:name', [authUser, user], specializationContoller.getSpecializationSuggestionsWithIcon)
 router.get('/get-suggestion-specialization-with-icon/:name', specializationContoller.getSpecializationSuggestionsWithIcon)
 
