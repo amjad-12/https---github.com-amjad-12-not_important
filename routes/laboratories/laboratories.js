@@ -51,7 +51,7 @@ router.post('/getUpToFiveMedicalAnalysNames', [authUser, user],  medicalAnalys.s
 router.post('/getNameMedicalAnalys', [authUser, user], medicalAnalys.searchForAnalysName)
 router.get('/get-my-chosen-medical-analys', [authLaboratory, laboratory], medicalAnalys.getMyChosenAnalysisForLaboratory)
 router.delete('/delete-chosen-medical-analysis/:medicalAnalysisId',[authLaboratory, laboratory], medicalAnalys.deleteMyChosenMedicalAnalysForLaboratory )
-router.get('/get-user-analysis-files',  medicalAnalys.getAnalysisFilesForUser)
+router.get('/get-user-analysis-files',[authUser, user],  medicalAnalys.getAnalysisFilesForUser)
 router.get('/download-analys-file/:fileId', [authUser, user], medicalAnalys.downloadAnalysFile)
 // router.get('/get-user-analysis-files', [authUser, user], medicalAnalys.getAnalysisFilesForUser)
 // router.get('/searchForLaboratory', [authUser, user], laboratoryController.serachForLaboratory)

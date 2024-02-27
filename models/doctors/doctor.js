@@ -127,7 +127,6 @@ const doctorSchema = new mongoose.Schema({
     location: {
         lng: {
             type: Number,
-
         },
         lat: {
             type: Number,

@@ -492,8 +492,8 @@ async function uploadAnalysFile(req, res) {
 }
 
 async function getAnalysisFilesForUser(req, res) {
-    // const userId = req.user._id; // Assuming user ID is available in the request
-    const userId = '65d86ab99706b6855a9cc9fe'; // Assuming user ID is available in the request
+    const userId = req.user._id; // Assuming user ID is available in the request
+    // const userId = '65d86ab99706b6855a9cc9fe'; // Assuming user ID is available in the request
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
