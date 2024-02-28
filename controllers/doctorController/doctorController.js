@@ -571,105 +571,105 @@ async function editProfileDoctor(req, res) {
   }
 }
 
-async function addAssistantDoctor(req, res) {
-  try {
+// async function addAssistantDoctor(req, res) {
+//   try {
 
-    const { error } = validateAssitantDoctor(req.body);
-    if (error) return res.status(400).json({
-      message: error.details[0].message
-    });
+//     const { error } = validateAssitantDoctor(req.body);
+//     if (error) return res.status(400).json({
+//       message: error.details[0].message
+//     });
 
-    let assistantCheck = await Assistant.findOne({ name: req.body.name });
+//     let assistantCheck = await Assistant.findOne({ name: req.body.name });
 
-    if (assistantCheck) {
-      return res.status(409).json({ message: 'Assistant already registered' });
-    }
+//     if (assistantCheck) {
+//       return res.status(409).json({ message: 'Assistant already registered' });
+//     }
 
-    const registeredByDoctor = req.doctor._id;
+//     const registeredByDoctor = req.doctor._id;
 
-    // console.log('pl')
-    const { name, password, examControl, bookControl } = req.body;
+//     // console.log('pl')
+//     const { name, password, examControl, bookControl } = req.body;
 
 
-    // Check if the doctor exists
-    const doctor = await Doctor.findById(registeredByDoctor);
-    if (!doctor) {
-      return res.status(404).json({ message: 'Doctor not found' });
-    }
+//     // Check if the doctor exists
+//     const doctor = await Doctor.findById(registeredByDoctor);
+//     if (!doctor) {
+//       return res.status(404).json({ message: 'Doctor not found' });
+//     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create and save the assistant
-    const assistant = new Assistant({
-      name,
-      password: hashedPassword,
-      registeredByDoctor,
-      examControl,
-      bookControl
-    });
-    await assistant.save();
+//     // Create and save the assistant
+//     const assistant = new Assistant({
+//       name,
+//       password: hashedPassword,
+//       registeredByDoctor,
+//       examControl,
+//       bookControl
+//     });
+//     await assistant.save();
 
-    // Associate the assistant with the doctor
-    // doctor.assistants.push(assistant._id);
-    // await doctor.save();
+//     // Associate the assistant with the doctor
+//     // doctor.assistants.push(assistant._id);
+//     // await doctor.save();
 
-    return res.status(201).json({ message: 'Assistant registered successfully' });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-}
+//     return res.status(201).json({ message: 'Assistant registered successfully' });
+//   } catch (error) {
+//     console.log(error)
+//     return res.status(500).json({ message: 'Internal server error' });
+//   }
+// }
 
-async function getAllAssitantForDoctor(req, res) {
-  try {
-    const doctorId = req.doctor._id;
+// async function getAllAssitantForDoctor(req, res) {
+//   try {
+//     const doctorId = req.doctor._id;
 
-    if (!doctorId) {
-      return res.status(400).json({ message: "doctorId is required" })
-    }
-    // Find all assistants registered by the specified doctor
-    const assistants = await Assistant.find({ registeredByDoctor: doctorId });
+//     if (!doctorId) {
+//       return res.status(400).json({ message: "doctorId is required" })
+//     }
+//     // Find all assistants registered by the specified doctor
+//     const assistants = await Assistant.find({ registeredByDoctor: doctorId });
 
-    if (assistants.length === 0) {
-      return res.status(404).json({ message: 'No assistants found for the specified doctor' });
-    }
+//     if (assistants.length === 0) {
+//       return res.status(404).json({ message: 'No assistants found for the specified doctor' });
+//     }
 
-    return res.status(200).json(assistants);
-  } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-}
+//     return res.status(200).json(assistants);
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Internal server error' });
+//   }
+// }
 
-async function deleteAssistantForDoctor(req, res) {
-  try {
-    const doctorId = req.doctor._id;
-    if (!doctorId) {
-      return res.status(400).json({ message: "doctorId is required" })
-    }
+// async function deleteAssistantForDoctor(req, res) {
+//   try {
+//     const doctorId = req.doctor._id;
+//     if (!doctorId) {
+//       return res.status(400).json({ message: "doctorId is required" })
+//     }
 
-    const assistantId = req.params.assistantId;
+//     const assistantId = req.params.assistantId;
 
-    if (!assistantId) {
-      return res.status(400).json({ message: "assistantId is required" })
-    }
-    // const assistantId = req.params.assistantId;
+//     if (!assistantId) {
+//       return res.status(400).json({ message: "assistantId is required" })
+//     }
+//     // const assistantId = req.params.assistantId;
 
-    // Find the assistant by its ID and the doctor's ID
-    const assistant = await Assistant.findOne({ _id: assistantId, registeredByDoctor: doctorId });
+//     // Find the assistant by its ID and the doctor's ID
+//     const assistant = await Assistant.findOne({ _id: assistantId, registeredByDoctor: doctorId });
 
-    if (!assistant) {
-      return res.status(404).json({ message: 'Assistant not found' });
-    }
+//     if (!assistant) {
+//       return res.status(404).json({ message: 'Assistant not found' });
+//     }
 
-    // Delete the assistant
-    await Assistant.findByIdAndRemove(assistantId);
+//     // Delete the assistant
+//     await Assistant.findByIdAndRemove(assistantId);
 
-    return res.status(200).json({ message: 'Assistant deleted successfully' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-}
+//     return res.status(200).json({ message: 'Assistant deleted successfully' });
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Internal server error' });
+//   }
+// }
 
 
 module.exports = {
@@ -677,9 +677,9 @@ module.exports = {
   getAllDoctors,
   serachForDoctor,
   editProfileDoctor,
-  addAssistantDoctor,
-  getAllAssitantForDoctor,
-  deleteAssistantForDoctor,
+  // addAssistantDoctor,
+  // getAllAssitantForDoctor,
+  // deleteAssistantForDoctor,
 
   getProfileDoctor,
   getDoctorsNearMe,

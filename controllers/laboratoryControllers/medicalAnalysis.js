@@ -464,6 +464,7 @@ async function uploadAnalysFile(req, res) {
             return res.status(404).json({ message: 'Laboratory not found.' });
         }
 
+        console.log(req.file)
 
 
         // Save the file information

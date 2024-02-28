@@ -1,33 +1,22 @@
-const config = require('config')
-const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
-const Joi = require('joi')
-require('dotenv').config();
-const private_key = process.env.med_jwtPrivateKey
-const assistantDoctorSchema = new mongoose.Schema({
+const Joi = require('joi');
+
+const assistantSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
+        trim: true
     },
     password: {
         type: String,
         required: true,
         minlength: 5,
-        maxlength: 255,
+        maxlength: 255
     },
-    registeredByDoctor: {
+    doctor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Doctor',
-        required: true,
-    },
-    examControl: {
-        type: Boolean,
-        default: false 
-    },
-    bookControl: {
-        type: Boolean,
-        default: false 
+        required: true
     },
     isAssistant: {
         type: Boolean,
@@ -35,33 +24,15 @@ const assistantDoctorSchema = new mongoose.Schema({
     },
 });
 
-assistantDoctorSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ 
-        _id: this._id, 
-        isAssistant: this.isAssistant, 
-        registeredByDoctor: this.registeredByDoctor,
-        examControl: this.examControl,
-        bookControl: this.bookControl
-    }, private_key)
-    return token
-}
+const Assistant = mongoose.model('Assistant', assistantSchema);
 
-
-const Assistant = mongoose.model('Assistant', assistantDoctorSchema);
-
-function validateAssitantDoctor(assistantDoctor) {
+function validateAssistant(assistant) {
     const schema = {
         name: Joi.string().required(),
-        password: Joi.string().min(5).max(255).required(),
-        examControl: Joi.boolean(),
-        bookControl: Joi.boolean()
-        // registeredByDoctor: Joi.string().required(),
+        password: Joi.string().min(5).max(255).required()
     };
 
-    return Joi.validate(assistantDoctor, schema);
+    return Joi.validate(assistant, schema);
 }
 
-module.exports = {
-    Assistant,
-    validateAssitantDoctor
-};
+module.exports = { Assistant, validateAssistant };
