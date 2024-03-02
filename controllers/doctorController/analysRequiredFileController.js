@@ -62,7 +62,7 @@ async function getAnalysRequiredFilesForUser(req, res) {
 
     try {
         const files = await AnalysRequiredFile.find({ userId })
-            .populate('doctorId', 'EnglishName ') // Populate laboratory name
+            .populate('doctorId', 'nameEnglish ') // Populate laboratory name
             .select('file.originalName doctorId time ')
             .limit(limit)
             .skip((page - 1) * limit);
@@ -121,7 +121,7 @@ async function downloadAnalysRequiredFile(req, res) {
     const { fileId } = req.params; // Assuming file ID is available in the request
     
     AnalysRequiredFile.findById(fileId)
-        .populate('doctorId', 'name')
+        .populate('doctorId', 'nameEnglish')
         .then(file => {
             if (!file) {
                 return res.status(404).json({
