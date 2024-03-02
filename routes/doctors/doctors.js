@@ -17,6 +17,8 @@ const authAssistant = require('../../middleware/authAssistant')
 const assistantBook = require('../../middleware/assistantBook')
 const assistantControlExam = require('../../middleware/assistantControlExam')
 
+const requiredAnalysFileController = require('../../controllers/doctorController/analysRequiredFileController')
+const prescriptionFileController = require('../../controllers/doctorController/prescriptionFileController')
 const medicalReportFileController = require('../../controllers/doctorController/medicalReportFileController')
 const doctorController = require('../../controllers/doctorController/doctorController')
 const authDoctorController = require('../../controllers/doctorController/authDoctorController')
@@ -50,14 +52,49 @@ const storageMedicalReport = multer.diskStorage({
     },
 });
 
+const storagePrescriptionFile = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadPathPrescription = './AnalysFiles/prescriptionPdf'; // Specify the upload directory for PDF files
+        fs.mkdirSync(uploadPathPrescription, { recursive: true }); // Ensure the directory exists
+        cb(null, uploadPathPrescription);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname);
+        cb(null, 'medical-report-' + uniqueSuffix + ext); // Use a consistent fieldname (e.g., 'file') instead of file.fieldname
+    },
+});
+
+const storageAnalysRequiredFile = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadPathAnalysRequired = './AnalysFiles/analysRequired'; // Specify the upload directory for PDF files
+        fs.mkdirSync(uploadPathAnalysRequired, { recursive: true }); // Ensure the directory exists
+        cb(null, uploadPathAnalysRequired);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname);
+        cb(null, 'medical-report-' + uniqueSuffix + ext); // Use a consistent fieldname (e.g., 'file') instead of file.fieldname
+    },
+});
+
 const uploadMedicalReport = multer({ storage: storageMedicalReport });
+const uploadPrescription = multer({ storage: storagePrescriptionFile });
+const uploadAnalysRequired = multer({ storage: storageAnalysRequiredFile });
+
+router.post('/upload-required-analys-file', [authDoctor, doctor], uploadAnalysRequired.single('file'), requiredAnalysFileController.uploadAnalysRequiredFile)
+router.get('/get-user-required-analys-files',[authUser, user],  requiredAnalysFileController.getAnalysRequiredFilesForUser)
+router.get('/download-required-analys-file/:fileId', [authUser, user], requiredAnalysFileController.downloadAnalysRequiredFile)
+
+router.post('/upload-prescription-file', [authDoctor, doctor], uploadPrescription.single('file'), prescriptionFileController.uploadPrescriptionFile)
+router.get('/get-user-prescription-files',[authUser, user],  prescriptionFileController.getPrescriptionFilesForUser)
+router.get('/download-prescription-file/:fileId', [authUser, user], prescriptionFileController.downloadPrescriptionFile)
 
 router.post('/upload-medical-report-file', [authDoctor, doctor], uploadMedicalReport.single('file'), medicalReportFileController.uploadMedicalReportFile)
 router.get('/get-user-medical-report-files',[authUser, user],  medicalReportFileController.getMedicalReportFilesForUser)
 router.get('/download-medical-report-file/:fileId', [authUser, user], medicalReportFileController.downloadMedicalReportFile)
 
 const upload = multer({ storage: storage })
-
 
 router.post('/add-assitant', [authDoctor, doctor], assistantDoctorController.registerAssistant)
 router.post('/login-assitant', [authDoctor, doctor], assistantDoctorController.assistantLogin)
@@ -111,41 +148,20 @@ router.get('/serach-for-doctor', [authUser, user], doctorController.serachForDoc
 router.post('/doctors-near-me', [authUser, user], doctorController.getDoctorsNearMe)
 
 
-// router.post('/add-assistant', [authDoctor, doctor], doctorController.addAssistantDoctor)
-// router.get('/all-doctor-assistants', [authDoctor, doctor], doctorController.getAllAssitantForDoctor)
-// router.delete('/delete-assistant/:assistantId', [authDoctor, doctor], doctorController.deleteAssistantForDoctor)
 
-
-// apis to use for medical reports and prescription
-// router.post('/prescriptions', [authDoctor, doctor], prescriptionContoller.createPrescription)
-// router.get('/all-doctor-prescriptions-made',[authDoctor, doctor], prescriptionContoller.getDoctorPrescription)
-// router.get('/patient-prescriptions', [authUser, user], prescriptionContoller.getPatientPrescription)
-// router.post('/medical-rebort', [authDoctor, doctor], medicalReportController.createMedicalReport)
-// router.get('/all-doctor-medical-report',  [authDoctor, doctor],  medicalReportController.getDoctorMedicalReport)
-// router.get('/patient-medical-reports', [authUser, user], medicalReportController.getPatientMedicalReports)
-
-
-
-router.post('/book-examination', [authUser, user], examinationController.bookExamination)
-router.post('/doctor-book-examination', [authDoctor, doctor], examinationController.bookExaminationByDoctor)
-router.post('/increment-current-number', [authDoctor, doctor], examinationController.incrementTheCurrentNumber)
-router.get('/get-current-number', [authDoctor, doctor], examinationController.getCurrentNumber)
-router.get('/get-current-and-nuxt-number-for-doctor', [authDoctor, doctor], examinationController.getCurentAndNuxtNumberWithoutDataForDoctor)
-router.get('/get-current-and-nuxt-number-for-doctor', [authDoctor, doctor], examinationController.getCurentAndNuxtNumberWithoutDataForDoctor)
-router.get('/get-next-number-for-doctor', [authDoctor, doctor], examinationController.getNextNumberForDoctor)
-router.get('/get-current-number-without-data/:doctorId', [authDoctor, doctor], examinationController.getCurentNumberWithoutData)
-router.get('/get-next-number/:doctorId', [authUser, user], examinationController.getNextNumber)
-router.get('/getAllExaminationNumbersWithInfo', [authDoctor, doctor], examinationController.getAllTheBookedNumberWithInfo)
-router.get('/getAllExaminationNumbersWithFlag/:doctorId', [authUser, user], examinationController.getAllExaminationNumbersWithFlag)
-router.put('/clearBookedPatients', [authDoctor, doctor], examinationController.clearBookedPatients)
 
 
 router.post('/add-specialization-with-icon', [authAdmin, admin], upload.single('image'), specializationContoller.addSpecializationWithIcon)
 router.get('/get-all-specialization-with-icon', [authUser, user], specializationContoller.getAllSpecializationWithIcon)
 router.get('/get-all-specialization-doctor', specializationContoller.getAllSpecializationWithoutIcon)
-// router.get('/get-suggestion-specialization-with-icon/:name', [authUser, user], specializationContoller.getSpecializationSuggestionsWithIcon)
 router.get('/get-suggestion-specialization-with-icon/:name', specializationContoller.getSpecializationSuggestionsWithIcon)
 
+
+
+router.get('/get-patient-dates', [authUser, user], examinationController.getAllDatesForPatient)
+
+
+module.exports = router
 
 // router.post('/assistant-login', assistantDoctorController.loginAssistantDoctor)
 // router.post('/assistant-book', [authAssistant, assistantBook], examinationController.bookExaminationByAssitant)
@@ -153,11 +169,19 @@ router.get('/get-suggestion-specialization-with-icon/:name', specializationConto
 // router.get('/getAllExaminationNumbersWithInfoToAssistant', [authAssistant], examinationController.getAllTheBookedNumberWithInfoToAssistant)
 // router.post('/increment-current-number-by-assistant', [authAssistant, assistantControlExam], examinationController.incrementTheCurrentNumberByAssistant)
 // router.put('/clearBookedPatientsByAssistant', [authAssistant, assistantControlExam], examinationController.clearBookedPatientsByAssistant)
-
-router.get('/get-patient-dates', [authUser, user], examinationController.getAllDatesForPatient)
+// router.get('/get-suggestion-specialization-with-icon/:name', [authUser, user], specializationContoller.getSpecializationSuggestionsWithIcon)
 // router.get('/current-exam-number', [authDoctor, doctor], examinationController.getCurrentExaminationNumber)
 // router.post('/mark-done', examinationController.markExaminationDone)
 // router.get('/booked-numbers', examinationController.getBookedNumbers)
-
-
-module.exports = router
+// router.post('/book-examination', [authUser, user], examinationController.bookExamination)
+// router.post('/doctor-book-examination', [authDoctor, doctor], examinationController.bookExaminationByDoctor)
+// router.post('/increment-current-number', [authDoctor, doctor], examinationController.incrementTheCurrentNumber)
+// router.get('/get-current-number', [authDoctor, doctor], examinationController.getCurrentNumber)
+// router.get('/get-current-and-nuxt-number-for-doctor', [authDoctor, doctor], examinationController.getCurentAndNuxtNumberWithoutDataForDoctor)
+// router.get('/get-current-and-nuxt-number-for-doctor', [authDoctor, doctor], examinationController.getCurentAndNuxtNumberWithoutDataForDoctor)
+// router.get('/get-next-number-for-doctor', [authDoctor, doctor], examinationController.getNextNumberForDoctor)
+// router.get('/get-current-number-without-data/:doctorId', [authDoctor, doctor], examinationController.getCurentNumberWithoutData)
+// router.get('/get-next-number/:doctorId', [authUser, user], examinationController.getNextNumber)
+// router.get('/getAllExaminationNumbersWithInfo', [authDoctor, doctor], examinationController.getAllTheBookedNumberWithInfo)
+// router.get('/getAllExaminationNumbersWithFlag/:doctorId', [authUser, user], examinationController.getAllExaminationNumbersWithFlag)
+// router.put('/clearBookedPatients', [authDoctor, doctor], examinationController.clearBookedPatients)

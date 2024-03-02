@@ -26,6 +26,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^7.2.3",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.11",
     "papaparse": "^5.4.1",
     "xlsx": "^0.18.5"
   }

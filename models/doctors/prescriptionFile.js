@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-const MedicalReportFileSchema = new mongoose.Schema({
+const PrescriptionFileSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -52,9 +52,9 @@ const MedicalReportFileSchema = new mongoose.Schema({
   },
 });
 
-const MedicalReportFile = mongoose.model('MedicalReportFile', MedicalReportFileSchema);
+const PrescriptionFile = mongoose.model('PrescriptionFile', PrescriptionFileSchema);
 
-function MedicalReportFileValidate(file) {
+function PrescriptionFileValidate(file) {
   const schema = {
     userId: Joi.string().required(),
   };
@@ -63,6 +63,6 @@ function MedicalReportFileValidate(file) {
 }
 
 module.exports = {
-    MedicalReportFile,
-    MedicalReportFileValidate,
+    PrescriptionFile,
+    PrescriptionFileValidate,
 };

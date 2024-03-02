@@ -2,7 +2,16 @@ const _ = require('lodash')
 const { User, validateUser } = require('../../models/users/user');
 const bcrypt = require('bcryptjs');
 const user = require('../../middleware/user');
-
+const jwt = require('jsonwebtoken')
+const private_key = process.env.med_jwtPrivateKey
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "amjadbarchini40@gmail.com",
+    pass: "wydn ooxi alqa yaiy",
+  },
+});
 
 async function getProfileUser(req, res) {
   try {
@@ -81,7 +90,7 @@ async function editProfileUser(req, res) {
         return res.status(409).json({ status: false, code: 409, message: 'Phone number is already registered', data: [] });
       }
     }
-    
+
     if (req.body.email) {
       const existingUser = await User.findOne({ email: req.body.email, _id: { $ne: user._id } });
       if (existingUser) {
@@ -90,7 +99,7 @@ async function editProfileUser(req, res) {
     }
 
     const { first_name, last_name, phone, email, password, medical_history, allergies, current_medications, gender, birthdate } = req.body;
-    
+
 
 
     user.first_name = first_name || user.first_name;
@@ -133,6 +142,7 @@ async function createUser(req, res) {
         data: []
       });
     }
+    const email = req.body.email
 
     let user = await User.findOne({ $or: [{ email: req.body.email }, { phone: req.body.phone }] });
 
@@ -160,6 +170,29 @@ async function createUser(req, res) {
     await user.save();
 
     const token = user.generateAuthToken();
+
+    const url = `http://localhost:5000/api/users/verify/${token}`
+
+    transporter.sendMail({
+      to: email,
+      subject: 'Verify Account',
+      html: `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome Email</title>
+      </head>
+      <body>
+      <div style="text-align: center; padding: 20px;">
+        <h1 style="color: #333;">Welcome to Our Community!</h1>
+        <p style="font-size: 16px; color: #666; margin-bottom: 20px;">We're excited to have you on board.</p>
+        <a href='${url}' style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Get Started</a>
+      </div>
+      </body>
+      </html>`
+    })
+
     return res.status(201).header('x-auth-token', token).json({
       status: true,
       code: 201,
@@ -178,11 +211,46 @@ async function createUser(req, res) {
   }
 }
 
+async function verifyUserByEmail(req, res) {
+  const { id } = req.params
+  console.log(id, req.params)
+  // Check we have an id
+  if (!id) {
+    return res.status(422).send({
+      message: "Missing Token"
+    });
+  }
+  // Step 1 -  Verify the token from the URL
+  let payload = null
+  try {
+    payload = jwt.verify(id, private_key);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+  try {
+    const user = await User.findById(payload._id);
+    if (!user) {
+      return res.status(404).send({
+        message: "User does not  exists"
+      });
+    }
+    // Step 3 - Update user verification status to true
+    user.verified = true;
+    await user.save();
+    return res.status(200).send({
+      message: "Account Verified"
+    });
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send(err);
+  }
+}
+
 async function getSuggestionUsersByNumber(req, res) {
   try {
     const { phoneNumber } = req.params;
 
-        // Convert the string phone number to a number
+    // Convert the string phone number to a number
     const phoneAsNumber = parseInt(phoneNumber);
 
     // Check if the conversion is successful
@@ -193,18 +261,18 @@ async function getSuggestionUsersByNumber(req, res) {
     // const firstSevenDigits = phoneNumber.substring(0, 7);
 
     // Use a regular expression to search for users whose phone numbers match the first 7 digits
-    const user = await User.find({ phone: phoneAsNumber  })
+    const user = await User.find({ phone: phoneAsNumber })
       .select('first_name last_name _id')
 
-      if (user.length === 0 || !user) {
-        return res.status(404).json({
-          message: 'No users found matching the provided phone number.',
-          data: [],
-          status: false,
-          code: 404
-        });
-      }
-  
+    if (user.length === 0 || !user) {
+      return res.status(404).json({
+        message: 'No users found matching the provided phone number.',
+        data: [],
+        status: false,
+        code: 404
+      });
+    }
+
 
     const userPhone = await User.findById(user[0]._id).select('-password -isUser -_id');
 
@@ -240,5 +308,6 @@ module.exports = {
   createUser,
   getProfileUser,
   editProfileUser,
-  getSuggestionUsersByNumber
+  getSuggestionUsersByNumber,
+  verifyUserByEmail
 };

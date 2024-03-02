@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
+const private_key = process.env.med_jwtPrivateKey
 const config = require('config')
 require('dotenv').config();
-const private_key = process.env.med_jwtPrivateKey
 module.exports = function (req, res, next) {
     `// we get the x-auth-token from the header because we add it in the userController 
     // in createUser function`

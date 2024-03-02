@@ -73,6 +73,11 @@ const userSchema = new mongoose.Schema({
             message: 'Birthdate cannot be in the future',
         },
     },
+    verified: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     
     gender: {
         type: String,

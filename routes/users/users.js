@@ -13,5 +13,6 @@ router.post('/', userController.createUser);
 router.get('/me', [authUser, user], userController.getProfileUser);
 router.get('/getUsersSuggestions/:phoneNumber', [authDoctor, doctor], userController.getSuggestionUsersByNumber);
 router.put('/me', [authUser, user], userController.editProfileUser);
+router.get('/verify/:id', userController.verifyUserByEmail);
 
 module.exports = router;
