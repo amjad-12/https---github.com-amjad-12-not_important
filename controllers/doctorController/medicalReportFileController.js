@@ -132,7 +132,7 @@ async function downloadMedicalReportFile(req, res) {
                     message: 'File not found.',
                 });
             }
-            console.log(file.file.path, 'sdsds')
+    
 
             // const filePath = path.join(__dirname, 'AnalysFiles', 'pdf', file.file.path);
             const filePath = file.file.path

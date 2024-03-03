@@ -126,7 +126,8 @@ async function getAllSpecializationWithIcon(req, res) {
         const language = req.headers['language'];
 
         // Get the base URL for your images
-        const baseUrl = process.env.NODE_ENV === 'production' ? 'https://your-production-url.com' : 'http://localhost:5000/Images/SpecializationsIcons/';
+        // const baseUrl = process.env.NODE_ENV === 'production' ? 'https://your-production-url.com' : 'http://localhost:5000/Images/SpecializationsIcons/';
+        const baseUrl = 'https://api.medsyncdz.com/Images/SpecializationsIcons/';
 
         // Update the specializations to return a full URL and the name based on the requested language
         const specializationsWithFullUrl = specializations.map((specialization) => {
