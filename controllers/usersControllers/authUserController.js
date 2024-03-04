@@ -36,7 +36,18 @@ async function authUser(req, res) {
                 code: 400
             });
         }
-        
+
+        // Check if the user is verified
+        if (!user.verified) {
+            return res.status(403).json({
+                data: [],
+                message: 'Your account is not verified yet.',
+                status: false,
+                code: 700
+            });
+        }
+
+
         // Capture the FCM token sent in the request body
         const fcmToken = req.body.fcmToken;
         if (fcmToken) {
@@ -47,7 +58,7 @@ async function authUser(req, res) {
                 user.fcmTokens.push({ token: fcmToken });
             }
         }
-        
+
         // sendPushNotification(fcmToken, '6570d7422bc6e7b98ff715c1',user._id, 'amjad is', 'we want it to work')
 
         const token = user.generateAuthToken();

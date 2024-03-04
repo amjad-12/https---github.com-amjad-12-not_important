@@ -145,6 +145,18 @@ async function createUser(req, res) {
     const email = req.body.email
 
     let user = await User.findOne({ $or: [{ email: req.body.email }, { phone: req.body.phone }] });
+    
+    
+    let userFind = await User.findOne({ $or: [{ email: req.body.email }, { phone: req.body.phone }] });
+    
+    if (user && !user?.verified) {
+      return res.status(403).json({
+        data: [],
+        message: 'You registered but not verify your account yet ',
+        status: false,
+        code: 700
+      });
+    }
 
     if (user) {
       return res.status(409).json({
@@ -154,6 +166,10 @@ async function createUser(req, res) {
         data: []
       });
     }
+
+
+
+
 
     user = new User(_.pick(req.body, [
       'first_name',
@@ -171,7 +187,7 @@ async function createUser(req, res) {
 
     const token = user.generateAuthToken();
 
-    const url = `http://localhost:5000/api/users/verify/${token}`
+    const url = `https://api.medsyncdz.com/api/users/verify/${token}`
 
     transporter.sendMail({
       to: email,
