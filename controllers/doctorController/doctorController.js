@@ -390,11 +390,11 @@ async function serachForDoctor(req, res) {
     const doctors = await Doctor.find(query, projection);
 
     if (doctors.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: 'No doctors founded',
         data: [],
-        status: false,
-        code: 404
+        status: true,
+        code: 200
       });
     }
 
@@ -457,11 +457,11 @@ async function getDoctorsNearMe(req, res) {
     });
 
     if (doctors.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: 'No doctors found near this location.',
         data: [],
-        status: false,
-        code: 404
+        status: true,
+        code: 200
       });
     }
 

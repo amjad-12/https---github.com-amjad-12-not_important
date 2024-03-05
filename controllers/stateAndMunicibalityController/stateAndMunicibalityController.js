@@ -55,11 +55,11 @@ async function getMunicibalitiesForState(req, res) {
         const mattricule = parseInt(req.params.mattricule);
 
         if (isNaN(mattricule)) {
-            return res.status(400).json({
+            return res.status(200).json({
                 message: 'Invalid mattricule, must be a number',
                 data: [],
-                status: false,
-                code: 400
+                status: true,
+                code: 200
             });
         }
 

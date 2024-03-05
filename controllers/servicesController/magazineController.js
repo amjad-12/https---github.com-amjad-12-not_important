@@ -136,9 +136,9 @@ async function getMagazinesPagination(req, res) {
         const filteredMagazines = magazinesWithFullUrl.filter(Boolean);
 
         if (filteredMagazines.length === 0) {
-            return res.status(404).json({
-                status: false,
-                code: 404,
+            return res.status(200).json({
+                status: true,
+                code: 200,
                 message: specializationId
                     ? 'No magazines found for the specified specialization.'
                     : 'No magazines found.',

@@ -130,7 +130,7 @@ async function getMyProfileService(req, res) {
 
         if (!serviceData) {
             
-            return res.status(404).json({ status: false, data: [], message: `User is not registered in the ${serviceName} service`, code: 404 });
+            return res.status(200).json({ status: true, data: [], message: `User is not registered in the ${serviceName} service`, code: 200 });
         }
 
         let userProfile;
@@ -148,7 +148,7 @@ async function getMyProfileService(req, res) {
             //     userProfile = await OtherServiceType.findById(serviceData.service._id);
             //     break;
             default:
-                return res.status(404).json({ status: false, data: [], message: `User is not registered in the ${serviceName} service`, code: 404 });
+                return res.status(200).json({ status: true, data: [], message: `User is not registered in the ${serviceName} service`, code: 200 });
         }
 
 
@@ -172,7 +172,7 @@ async function getMyProfileService(req, res) {
         }
 
         if (serviceName === 'BloodDonor') {
-            return res.status(200).json({  code: 404, data:{ serviceName, 
+            return res.status(200).json({  code: 200, data:{ serviceName, 
                 id: filteredUserProfile._id,
                 firstName: filteredUserProfile.firstName,
                 lastName: filteredUserProfile.lastName,
@@ -180,16 +180,16 @@ async function getMyProfileService(req, res) {
                 bloodType: filteredUserProfile.bloodType,
                 phone: filteredUserProfile.phone,
                 municipality: filteredUserProfile.municipality,
-                state: filteredUserProfile.state,  }, status: false ,message:'data retrived successfully'  });
+                state: filteredUserProfile.state,  }, status: true ,message:'data retrived successfully'  });
         } else if (serviceName === 'ambulance') {
-            return res.status(200).json({  code: 404, data:{ serviceName, 
+            return res.status(200).json({  code: 200, data:{ serviceName, 
                 id: filteredUserProfile._id,
                 firstName: filteredUserProfile.firstName,
                 lastName: filteredUserProfile.lastName,
                 isActive: filteredUserProfile.isActive,
                 phone: filteredUserProfile.phone,
                 municipality: filteredUserProfile.municipality,
-                state: filteredUserProfile.state,  }, status: false ,message:'data retrived successfully'  });
+                state: filteredUserProfile.state,  }, status: true ,message:'data retrived successfully'  });
         }
         // return res.status(200).json({ userProfile });
     } catch (ex) {

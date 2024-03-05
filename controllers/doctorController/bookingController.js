@@ -780,7 +780,7 @@ async function getCurrentSlot(req, res) {
 
 async function getslots(req, res) {
   try {
-    console.log('asajskajskjaksjajskajskas')
+    
     const { doctorId } = req.params;
 
     // Find the doctor based on the extracted doctor ID
@@ -788,11 +788,11 @@ async function getslots(req, res) {
 
     // If the doctor is not found, return a 404 Not Found response
     if (!doctor) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: 'No doctors found',
         data: [],
-        status: false,
-        code: 404
+        status: true,
+        code: 200
       });
     }
 
@@ -833,9 +833,9 @@ async function getslots(req, res) {
       // Convert all values to minutes for easier comparison
       const clinicClosingTimeInMinutes = parseInt(clinicClosingHours) * 60 + parseInt(clinicClosingMinutes);
       const clinicOpeningTimeInMinutes = parseInt(clinicOpeningHours) * 60 + parseInt(clinicOpeningMinutes);
-      console.log(clinicOpeningTimeInMinutes, 'clinic openeing time in minutes')
-      console.log(clinicClosingTimeInMinutes, 'clinic closing time in minutes')
-      console.log(startBookingTimeInMinutes - 1440, 'start booking time in minutes')
+      // console.log(clinicOpeningTimeInMinutes, 'clinic openeing time in minutes')
+      // console.log(clinicClosingTimeInMinutes, 'clinic closing time in minutes')
+      // console.log(startBookingTimeInMinutes - 1440, 'start booking time in minutes')
       if ((currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) || (currentDaySchedule && (currentTimeInMinutes <= clinicOpeningTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)))) {
 
 
@@ -881,9 +881,7 @@ async function getslots(req, res) {
 
             // Find booked slots for the next day
             const nextDayStart = new Date(nextDate);
-            console.log(nextDate, 'next datee')
             nextDayStart.setHours(0, 0, 0, 0);
-            console.log(nextDayStart)
 
             const nextDayEnd = new Date(nextDate);
 
@@ -934,7 +932,7 @@ async function getslots(req, res) {
           status: true,
           code: 200,
           data: {
-            nextDate: [],
+            nextDate: null,
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
             today: {
               message: null,
@@ -959,7 +957,7 @@ async function getslots(req, res) {
     // If the current day is not suitable, try to find available slots for the next working day
     const nextAvailableDayInfo = getNextWorkingDay(today, doctorSchedule);
     if (nextAvailableDayInfo) {
-      console.log('dsdsds')
+      
       const { nextDate, maxPatients, clinicHoursNextDay, immediately } = nextAvailableDayInfo;
       const [clinicClosingHoursNextDay, clinicClosingMinutesNextDay] = clinicHoursNextDay.clinicClosingTime.split(':');
       const clinicClosingTimeInMinutesNextDay = parseInt(clinicClosingHoursNextDay) * 60 + parseInt(clinicClosingMinutesNextDay);
@@ -1014,7 +1012,7 @@ async function getslots(req, res) {
           code: 200,
 
           data: {
-            nextDate: [],
+            nextDate: null,
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
             today: {
               maxPatients,
@@ -1050,7 +1048,7 @@ async function getslots(req, res) {
 
             },
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
-            today: []
+            today: null
           }
 
           // previousDate: previousDate.toLocaleString(),
@@ -2531,7 +2529,7 @@ async function listCancelledDatesByUserForDoctor(req, res) {
     // });
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2585,7 +2583,7 @@ async function listCancelledDatesByDoctorForDoctor(req, res) {
       .sort({ appointmentDate: -1 }) // Sort by appointmentDate in descending order
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No Cancelled appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2639,7 +2637,7 @@ async function listCancelledDatesByUserIncorrectForDoctor(req, res) {
       .sort({ appointmentDate: -1 }) // Sort by appointmentDate in descending order
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No cancelled appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2672,11 +2670,6 @@ async function listCancelledDatesByUserIncorrectForDoctor(req, res) {
   }
 }
 
-
-
-
-
-
 async function listCancelledDatesByUser(req, res) {
   try {
     const patientId = req.user._id;
@@ -2702,7 +2695,7 @@ async function listCancelledDatesByUser(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2763,7 +2756,7 @@ async function listCancelledDatesByDoctor(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2823,7 +2816,7 @@ async function previousDates(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2884,7 +2877,7 @@ async function pendingDates(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Map appointments to a more structured response
@@ -2935,9 +2928,7 @@ async function currentDates(req, res) {
     nextDay.setDate(nextDay.getDate() + 1);
 
 
-    console.log(today)
-    console.log(nextDay)
-    console.log(new Date())
+
 
     // Find completed appointments for the specified patient
     const completedAppointments = await Appointment.find({
@@ -2961,7 +2952,7 @@ async function currentDates(req, res) {
 
 
     if (!completedAppointments) {
-      return res.status(404).json({ message: 'No completed appointments found for the specified patient' });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
     }
 
     // Initialize arrays for appointments on the same day and the next day
@@ -2969,8 +2960,7 @@ async function currentDates(req, res) {
     const appointmentsNextDay = [];
 
     const appointmentAfterFilteringThem = []
-    console.log(completedAppointments)
-    console.log('day name ', getDayName(today))
+
     // Categorize appointments based on their appointment date
     completedAppointments.forEach(appointment => {
       const appointmentDate = appointment.appointmentDate.toISOString().split('T')[0];
@@ -2998,11 +2988,7 @@ async function currentDates(req, res) {
         const clinicClosingTimeInMinutes = parseInt(clinicClosingHours) * 60 + parseInt(clinicClosingMinutes);
         const clinicOpeningTimeInMinutes = parseInt(clinicOpeningHours) * 60 + parseInt(clinicOpeningMinutes);
 
-        console.log(currentDaySchedule)
-        console.log(currentDayName)
-        console.log(currentTimeInMinutes)
-        console.log(clinicOpeningTimeInMinutes)
-        console.log(clinicClosingTimeInMinutes)
+
 
         if (currentDaySchedule && currentTimeInMinutes >= clinicOpeningTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutes && (currentTimeInMinutes >= startBookingTimeInMinutes - 1440)) {
           appointmentAfterFilteringThem.push(appointment);
@@ -3027,11 +3013,6 @@ async function currentDates(req, res) {
 
         console.log(currentTimeInMinutes >= startBookingTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutesNextDay + 1440 && immediately)
 
-        console.log(currentTimeInMinutes)
-        console.log(startBookingTimeInMinutes - 1440)
-        console.log(clinicClosingTimeInMinutesNextDay)
-        console.log(realToday)
-        console.log(nextDate)
 
         if (currentTimeInMinutes >= startBookingTimeInMinutes && currentTimeInMinutes <= clinicClosingTimeInMinutesNextDay + 1440 && immediately) {
           appointmentAfterFilteringThem.push(appointment);
@@ -3088,7 +3069,7 @@ async function cancelAppointmentByUser(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(404).json({ message: 'Appointment not found for the user or already completed' });
+      return res.status(404).json({ message: 'Appointment not found for the user or already completed',data: [], code: 404,status: false });
     }
 
     // Update the appointment to mark it as canceled by the user
@@ -3127,7 +3108,7 @@ async function cancelAppointmentByUserBecauseTheDoctorBookFalse(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(404).json({ message: 'Appointment not found for the user or already completed' });
+      return res.status(404).json({ message: 'Appointment not found for the user or already completed',data: [], code: 404,status: false });
     }
 
     // Update the appointment to mark it as canceled by the user
@@ -3167,7 +3148,7 @@ async function approveAppointmentByUser(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(404).json({ data: null, code: 200, message: 'Appointment not found for the user or already completed' });
+      return res.status(200).json({ data: [], code: 200, message: 'Appointment not found for the user or already completed',status: true });
     }
 
     // Update the appointment to mark it as canceled by the user

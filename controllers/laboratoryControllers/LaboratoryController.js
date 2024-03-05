@@ -110,11 +110,11 @@ async function serachForLaboratory(req, res) {
     const laboratories = await Laboratory.find(query, projection);
 
     if (laboratories.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         data: [],
         message: 'No laboratories found',
-        code: 404,
-        status: false
+        code: 200,
+        status: true
       });
     }
 
@@ -188,9 +188,9 @@ async function getLaboratoriesNearMe(req, res) {
     });
 
     if (laboratories.length === 0) {
-      return res.status(404).json({
-        code: 404,
-        status: false,
+      return res.status(200).json({
+        code: 200,
+        status: true,
         message: 'No laboratories found near this location.',
         data: []
       });
@@ -255,9 +255,9 @@ async function getLaboratoryProfileForUser(req, res){
       const laboratory = await Laboratory.findById(labId);
 
       if (!laboratory) {
-          return res.status(404).json({
-              code: 404,
-              status: false,
+          return res.status(200).json({
+              code: 200,
+              status: true,
               message: 'Laboratory not found.',
               data: []
           });

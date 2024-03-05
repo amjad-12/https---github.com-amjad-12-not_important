@@ -154,9 +154,9 @@ async function searchForBloodDonors(req, res) {
         const bloodDonors = await BloodDonor.find(query).select('firstName lastName municipality state phone');
 
         if (bloodDonors.length === 0) {
-            return res.status(404).json({
-                code: 404,
-                status: false,
+            return res.status(200).json({
+                code: 200,
+                status: true,
                 message: 'No blood donors found',
                 data: []
             });

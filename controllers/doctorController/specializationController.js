@@ -115,11 +115,11 @@ async function getAllSpecializationWithIcon(req, res) {
         const specializations = await Specialization.find({}, '_id nameArabic nameFrench nameEnglish imagePath isFirst');
 
         if (!specializations || specializations.length === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: 'No specializations found',
                 data: [],
-                status: false,
-                code: 404
+                status: true,
+                code: 200
             });
         }
 
@@ -174,11 +174,11 @@ async function getAllSpecializationWithoutIcon(req, res) {
         const specializations = await Specialization.find({}, '_id nameArabic nameFrench nameEnglish');
 
         if (!specializations || specializations.length === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: 'No specializations found',
                 data: [],
-                status: false,
-                code: 404
+                status: true,
+                code: 200
             });
         }
 
