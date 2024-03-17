@@ -9,7 +9,7 @@ const Joi = require('joi');
 
 // Doctor login
 async function loginDoctor(req, res) {
-  console.log('asasasasasasas')
+  // console.log('asasasasasasas')
   try {
     const { error } = validateDoctorLogin(req.body);
     if (error) return res.status(400).json({

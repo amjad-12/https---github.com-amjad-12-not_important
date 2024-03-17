@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const { Specialization } = require('../../models/doctors/specializations');
 const Joi = require('joi');
 const { getPhoneCodesForWilaya } = require('@dzcode-io/leblad');
+const { after } = require('lodash');
 
 
 // export const sendPushNotification = async (devicePushToken, title, body) => {
@@ -776,11 +777,333 @@ async function getCurrentSlot(req, res) {
   }
 }
 
+async function getCurrentSlotForDoctor(req, res) {
+  try {
+    const doctorId = req.doctor._id;
 
+    // Find the doctor based on the extracted doctor ID
+    const doctor = await Doctor.findById(doctorId);
+
+    // If the doctor is not found, return a 404 Not Found response
+    if (!doctor) {
+      return res.status(404).json({
+        message: 'No doctors found',
+        data: [],
+        status: false,
+        code: 404
+      });
+    }
+
+    // Get the current date and time
+    const today = new Date();
+    today.setHours(today.getHours() + 1);
+
+    // Get the current day name (e.g., 'Monday', 'Tuesday', etc.)
+    const currentDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+
+    // Assuming you have the doctor's schedule
+    const doctorSchedule = doctor.schedule;
+
+    // Check if the doctor is open on the current day
+    const currentDaySchedule = doctorSchedule.find(day => day.dayOfWeek === currentDayName);
+
+    if (!currentDaySchedule) {
+      return res.status(404).json({
+        status: false,
+        code: 404,
+        message: 'No available slots found in the next working days.',
+        data: []
+      });
+    }
+
+    // Get the start and end of the current day
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Find booked slots for the current day
+    const bookedSlots = await Appointment.find({
+      doctor: doctor._id,
+      appointmentDate: {
+        $gte: startOfDay,
+        $lt: endOfDay,
+      },
+    });
+
+    // Sort appointments by slot number
+    bookedSlots.sort((a, b) => a.slot - b.slot);
+
+    let currentSlot = 0;
+
+    // Find the last completed slot
+    for (const appointment of bookedSlots) {
+      if (appointment.completed) {
+        currentSlot = appointment.slot;
+      }
+    }
+
+    let beforeCurrentSlot = null;
+    let afterCurrentSlot = null;
+
+    // Find the appointment slot before and after the last completed slot
+    const lastCompletedIndex = bookedSlots.findIndex(appointment => appointment.slot === currentSlot);
+
+    if (lastCompletedIndex > 0) {
+      beforeCurrentSlot = bookedSlots[lastCompletedIndex - 1].slot;
+    }
+
+    if (lastCompletedIndex < bookedSlots.length - 1) {
+      afterCurrentSlot = bookedSlots[lastCompletedIndex + 1].slot;
+    }
+
+    return res.json({
+      message: 'Last completed slot retrieved successfully',
+      status: true,
+      code: 200,
+      data: {
+        beforeCurrentSlot,
+        currentSlot,
+        afterCurrentSlot
+      }
+    });
+
+  } catch (error) {
+    // Return a 500 Internal Server Error response if an unexpected error occurs
+    return res.status(500).json({
+      status: false,
+      code: 500,
+      message: 'Internal server error',
+      data: []
+    });
+  }
+}
+
+async function markAfterCompleted(req, res) {
+  try {
+    const doctorId = req.doctor._id;
+    const doctor = await Doctor.findById(doctorId);
+    // If the doctor is not found, return a 404 Not Found response
+    if (!doctor) {
+      return res.status(404).json({
+        message: 'No doctors found',
+        data: [],
+        status: false,
+        code: 404
+      });
+    }
+
+    // Get the current date and time
+    const today = new Date();
+    today.setHours(today.getHours() + 1);
+
+    // Get the current day name (e.g., 'Monday', 'Tuesday', etc.)
+    const currentDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+
+    // Assuming you have the doctor's schedule
+    const doctorSchedule = doctor.schedule;
+
+    // Check if the doctor is open on the current day
+    const currentDaySchedule = doctorSchedule.find(day => day.dayOfWeek === currentDayName);
+
+    if (!currentDaySchedule) {
+      return res.status(404).json({
+        status: false,
+        code: 404,
+        message: 'No available slots found in the next working days.',
+        data: []
+      });
+    }
+
+    // Get the start and end of the current day
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Find booked slots for the current day
+    const bookedSlots = await Appointment.find({
+      doctor: doctor._id,
+      appointmentDate: {
+        $gte: startOfDay,
+        $lt: endOfDay,
+      },
+    });
+
+
+    // Sort appointments by slot number
+    bookedSlots.sort((a, b) => a.slot - b.slot);
+    console.log(bookedSlots, 'fffffffffffff')
+    // Find the last completed slot
+    // const bookedSlots = await Appointment.findOne({ doctorId, completed: true }).sort({ slot: -1 });
+
+    if (!bookedSlots) {
+      return res.status(404).json({ message: 'No appointments found', status: false });
+    }
+
+    let currentSlot = 0;
+
+    // Find the last completed slot
+    for (const appointment of bookedSlots) {
+      if (appointment.completed) {
+        currentSlot = appointment.slot;
+      }
+    }
+
+    let afterCurrentSlot = null
+    const lastCompletedIndex = bookedSlots.findIndex(appointment => appointment.slot === currentSlot);
+    console.log(lastCompletedIndex)
+
+    if (lastCompletedIndex < bookedSlots.length - 1) {
+      afterCurrentSlot = bookedSlots[lastCompletedIndex + 1]._id;
+      console.log(afterCurrentSlot)
+    } else {
+      return res.status(404).json({ message: 'No appointment found after the last completed slot', status: false, data: null, code: 400 });
+    }
+
+    // // Find the appointment after the last completed slot
+    // const appointmentAfterLastCompleted = await Appointment.findOne({ doctorId, slot: { $gt: bookedSlots.slot } }).sort({ slot: 1 });
+
+    // if (!appointmentAfterLastCompleted) {
+    //   return res.status(404).json({ message: 'No appointment found after the last completed slot', status: false });
+    // }
+
+    // Update the appointment after the last completed slot to mark it as completed
+    await Appointment.findByIdAndUpdate(afterCurrentSlot, { completed: true });
+
+    return res.status(200).json({ message: 'Appointment after the last completed slot marked as completed', status: true });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ message: 'Internal server error', status: false });
+  }
+}
+
+async function markLastNotCompleted(req, res) {
+  try {
+    const doctorId = req.doctor._id;
+    const doctor = await Doctor.findById(doctorId);
+    // If the doctor is not found, return a 404 Not Found response
+    if (!doctor) {
+      return res.status(404).json({
+        message: 'No doctors found',
+        data: [],
+        status: false,
+        code: 404
+      });
+    }
+
+    // Get the current date and time
+    const today = new Date();
+    today.setHours(today.getHours() + 1);
+
+    // Get the current day name (e.g., 'Monday', 'Tuesday', etc.)
+    const currentDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+
+    // Assuming you have the doctor's schedule
+    const doctorSchedule = doctor.schedule;
+
+    // Check if the doctor is open on the current day
+    const currentDaySchedule = doctorSchedule.find(day => day.dayOfWeek === currentDayName);
+
+    if (!currentDaySchedule) {
+      return res.status(404).json({
+        status: false,
+        code: 404,
+        message: 'No available slots found in the next working days.',
+        data: []
+      });
+    }
+
+    // Get the start and end of the current day
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Find booked slots for the current day
+    const bookedSlots = await Appointment.find({
+      doctor: doctor._id,
+      appointmentDate: {
+        $gte: startOfDay,
+        $lt: endOfDay,
+      },
+    });
+
+
+    // Sort appointments by slot number
+    bookedSlots.sort((a, b) => a.slot - b.slot);
+    // Find the last completed slot
+    // const bookedSlots = await Appointment.findOne({ doctorId, completed: true }).sort({ slot: -1 });
+
+    if (!bookedSlots) {
+      return res.status(404).json({ message: 'No appointments found', status: false });
+    }
+
+    let currentSlot = 0;
+
+    // Find the last completed slot
+    for (const appointment of bookedSlots) {
+      if (appointment.completed) {
+        currentSlot = appointment.slot;
+      }
+    }
+
+
+    let beforeCurrentSlot = null;
+    const lastCompletedIndex = bookedSlots.findIndex(appointment => appointment.slot === currentSlot);
+
+
+    if (lastCompletedIndex >= 0) {
+      beforeCurrentSlot = bookedSlots[lastCompletedIndex]._id;
+    }
+    else {
+      return res.status(404).json({ message: 'No appointment found after the last completed slot', status: false, data: null, code: 400 });
+    }
+
+    // // Find the appointment after the last completed slot
+    // const appointmentAfterLastCompleted = await Appointment.findOne({ doctorId, slot: { $gt: bookedSlots.slot } }).sort({ slot: 1 });
+
+    // if (!appointmentAfterLastCompleted) {
+    //   return res.status(404).json({ message: 'No appointment found after the last completed slot', status: false });
+    // }
+
+    // Update the appointment after the last completed slot to mark it as completed
+    const y = await Appointment.findByIdAndUpdate(beforeCurrentSlot, { completed: false });
+
+
+    return res.status(200).json({ message: 'Appointment after the last completed slot marked as no completed', status: true, data: null, code: 200 });
+  } catch (error) {
+
+    return res.status(500).json({ message: 'Internal server error', status: false });
+  }
+}
+
+async function getAllAppointmentsForDoctorBYPhoneUser(req, res) {
+  try {
+    const { phone } = req.params;
+
+    // Check if a user with the provided phone number exists
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', status: false,  data: null, code:404  });
+    }
+
+    // Find appointments for the user by their full phone number
+    const appointments = await Appointment.find({ 'patient.phone': phone }).sort({ appointmentDate: -1 });
+
+    return res.status(200).json({ message: 'Appointments retrieved successfully', status: true, data: appointments, code:200 });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ message: 'Internal server error', status: false });
+  }
+}
 
 async function getslots(req, res) {
   try {
-    
+
     const { doctorId } = req.params;
 
     // Find the doctor based on the extracted doctor ID
@@ -910,7 +1233,7 @@ async function getslots(req, res) {
                   availableSlots: [],
                   unavailableSlots: [],
                   pendingAppointments: [],
-                  maxPatients: []
+                  maxPatients: 0
                 },
                 // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
                 today: {
@@ -957,7 +1280,7 @@ async function getslots(req, res) {
     // If the current day is not suitable, try to find available slots for the next working day
     const nextAvailableDayInfo = getNextWorkingDay(today, doctorSchedule);
     if (nextAvailableDayInfo) {
-      
+
       const { nextDate, maxPatients, clinicHoursNextDay, immediately } = nextAvailableDayInfo;
       const [clinicClosingHoursNextDay, clinicClosingMinutesNextDay] = clinicHoursNextDay.clinicClosingTime.split(':');
       const clinicClosingTimeInMinutesNextDay = parseInt(clinicClosingHoursNextDay) * 60 + parseInt(clinicClosingMinutesNextDay);
@@ -1044,7 +1367,7 @@ async function getslots(req, res) {
               availableSlots: [],
               unavailableSlots: [],
               pendingAppointments: [],
-              maxPatients: []
+              maxPatients: 0
 
             },
             // nextDate: { availableSlotsNextDay, date: nextDate.toISOString().split('T')[0] },
@@ -1290,10 +1613,10 @@ async function getSlotsStatusForDoctorByToday(req, res) {
           },
         });
 
-        
+
         // Sort appointments by slot number
         bookedSlots.sort((a, b) => a.slot - b.slot);
-        
+
 
         let lastCompletedSlot = 0;
 
@@ -2529,7 +2852,7 @@ async function listCancelledDatesByUserForDoctor(req, res) {
     // });
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2583,7 +2906,7 @@ async function listCancelledDatesByDoctorForDoctor(req, res) {
       .sort({ appointmentDate: -1 }) // Sort by appointmentDate in descending order
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No Cancelled appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No Cancelled appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2637,7 +2960,7 @@ async function listCancelledDatesByUserIncorrectForDoctor(req, res) {
       .sort({ appointmentDate: -1 }) // Sort by appointmentDate in descending order
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No cancelled appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No cancelled appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2695,7 +3018,7 @@ async function listCancelledDatesByUser(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2756,7 +3079,7 @@ async function listCancelledDatesByDoctor(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2816,7 +3139,7 @@ async function previousDates(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2877,7 +3200,7 @@ async function pendingDates(req, res) {
       });
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Map appointments to a more structured response
@@ -2952,7 +3275,7 @@ async function currentDates(req, res) {
 
 
     if (!completedAppointments) {
-      return res.status(200).json({ message: 'No completed appointments found for the specified patient',data: [], code: 200,status: true });
+      return res.status(200).json({ message: 'No completed appointments found for the specified patient', data: [], code: 200, status: true });
     }
 
     // Initialize arrays for appointments on the same day and the next day
@@ -3069,7 +3392,7 @@ async function cancelAppointmentByUser(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(404).json({ message: 'Appointment not found for the user or already completed',data: [], code: 404,status: false });
+      return res.status(404).json({ message: 'Appointment not found for the user or already completed', data: [], code: 404, status: false });
     }
 
     // Update the appointment to mark it as canceled by the user
@@ -3108,7 +3431,7 @@ async function cancelAppointmentByUserBecauseTheDoctorBookFalse(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(404).json({ message: 'Appointment not found for the user or already completed',data: [], code: 404,status: false });
+      return res.status(404).json({ message: 'Appointment not found for the user or already completed', data: [], code: 404, status: false });
     }
 
     // Update the appointment to mark it as canceled by the user
@@ -3148,7 +3471,7 @@ async function approveAppointmentByUser(req, res) {
     });
 
     if (!existingAppointment) {
-      return res.status(200).json({ data: [], code: 200, message: 'Appointment not found for the user or already completed',status: true });
+      return res.status(200).json({ data: [], code: 200, message: 'Appointment not found for the user or already completed', status: true });
     }
 
     // Update the appointment to mark it as canceled by the user
@@ -3212,7 +3535,7 @@ async function analysAppointmentForDoctor(req, res) {
         status: true,
         code: 200,
         message: 'No appointments found for the specified doctor.',
-        data: { completed:0, future:0, cancelled:0, name: doctor.nameEnglish },
+        data: { completed: 0, future: 0, cancelled: 0, name: doctor.nameEnglish },
       });
     }
 
@@ -3272,7 +3595,11 @@ module.exports = {
   completeFlagAppointmentByDoctor,
   bookAppointmentByDoctor,
   getSlotsStatusForDoctorByToday,
-  analysAppointmentForDoctor
+  analysAppointmentForDoctor,
+  getCurrentSlotForDoctor,
+  markAfterCompleted,
+  markLastNotCompleted,
+  getAllAppointmentsForDoctorBYPhoneUser
 }
 
 

@@ -96,6 +96,7 @@ async function createDoctor(req, res) {
 
 async function getProfileDoctor(req, res) {
   try {
+    console.log('sddddddddddddddd')
     // Get the doctor's ID from the authenticated token
     const doctorId = req.doctor._id;
 
@@ -232,12 +233,14 @@ async function getProfileDoctorShowUser(req, res) {
 
 async function getProfileDoctorLikeUser(req, res) {
   try {
+    // console.log(req.doctor,"ddddddddfddddddddddd")
     // Get the doctor's ID from the authenticated token
     const  doctorId  = req.doctor._id;
     const language = req.headers['language'];
     // Find the doctor in the database by ID and select the name and specialization fields
     const doctor = await Doctor.findById(doctorId)
       .select('nameArabic nameEnglish location phone  clinicName bio address schedule bookingByUser')
+      // console.log(doctor,"fddddddddddddd")
     // .populate({
     //   path: 'specialization',
     //   select: 'nameArabic nameEnglish nameFrench imagePath ',

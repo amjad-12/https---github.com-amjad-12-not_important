@@ -134,7 +134,11 @@ router.put('/cancelAppointmentByDoctor/:appointmentId', [authDoctor, doctor], ap
 router.put('/completeFlagAppointmentByDoctor/:appointmentId', [authDoctor, doctor], appointmentController.completeFlagAppointmentByDoctor)
 
 
+router.post('/get-appointments-by-phone/:phone', appointmentController.getAllAppointmentsForDoctorBYPhoneUser)
 router.get('/currentSlot/:doctorId', [authUser, user], appointmentController.getCurrentSlot)
+router.get('/current-next-back-slot', [authDoctor, doctor], appointmentController.getCurrentSlotForDoctor)
+router.post('/mark-after-completed', [authDoctor, doctor], appointmentController.markAfterCompleted)
+router.post('/mark-last-uncompleted', [authDoctor, doctor], appointmentController.markLastNotCompleted)
 
 router.post('/create-doctor', doctorController.createDoctor)
 router.put('/edit-profile-doctor', [authDoctor, doctor], doctorController.editProfileDoctor)
