@@ -4,12 +4,82 @@ const { User } = require('../../models/users/user')
 const fs = require('fs');
 const path = require('path');
 
+async function getMedicalReportFilesDoctorHistory(req, res) {
+    console.log(req.body)
+    const { userId } = req.body;
+    const doctorId = req.doctor._id;
+
+    let userExists = false;
+    let doctorExists = true;
+
+    const doctor = await Doctor.findById(doctorId);
+
+    // If the doctor is not found, return a 404 Not Found response
+    if (!doctor) {
+        return res.status(404).json({
+            message: 'No doctors found',
+            data: [],
+            status: true,
+            code: 404
+        });
+    }
+
+    if (userId) {
+        const user = await User.findById(userId);
+        userExists = true
+        if (!user) {
+            return res.status(404).json({
+                message: 'No user found',
+                data: [],
+                status: true,
+                code: 404
+            });
+        }
+    }
+
+    try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+
+        let query = { doctorId };
+        if (userId) {
+            query.userId = userId;
+        }
+
+        const files = await MedicalReportFile.find(query)
+            .populate({
+                path: 'userId',
+                select: 'phone first_name last_name',
+            })
+            .select('file.originalName doctorId time first_name last_name phone age')
+            // .limit(limit)
+            // .skip((page - 1) * limit);
+
+        return res.status(200).json({
+            status: true,
+            data: files,
+            code: 200,
+            message: 'Files retrieved successfully.',
+            
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            status: false,
+            code: 500,
+            message: 'Internal server error.',
+            data: null
+        });
+    }
+}
+
 async function uploadMedicalReportFile(req, res) {
     try {
 
         const { error } = MedicalReportFileValidate(req.body);
         if (error) {
-            return res.status(400).json({ message: error.details[0].message });
+            return res.status(400).json({ message: error.details[0].message, status: false, code: 400, data: null });
         }
 
 
@@ -19,14 +89,14 @@ async function uploadMedicalReportFile(req, res) {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found',  status: false, code: 404, data: null });
         }
 
 
         const doctor = await Doctor.findById(doctorId).select('-_id');
 
         if (!doctor) {
-            return res.status(404).json({ message: 'Doctor not found.' });
+            return res.status(404).json({ message: 'Doctor not found.',  status: false, code: 404, data: null });
         }
 
 
@@ -48,10 +118,10 @@ async function uploadMedicalReportFile(req, res) {
             },
         });
         await file.save()
-        return res.status(201).json({ file });
+        return res.status(201).json({  message: 'Medical Report File Uploaded Successfull', status: true, code: 201, data: null});
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Internal server error.' });
+        return res.status(500).json({ message: 'Internal server error.',  status: false, code: 500, data: null });
     }
 }
 
@@ -166,5 +236,6 @@ async function downloadMedicalReportFile(req, res) {
 module.exports = {
     uploadMedicalReportFile,
     getMedicalReportFilesForUser,
-    downloadMedicalReportFile
+    downloadMedicalReportFile,
+    getMedicalReportFilesDoctorHistory
 }

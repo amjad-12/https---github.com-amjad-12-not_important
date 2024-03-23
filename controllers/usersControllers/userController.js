@@ -290,9 +290,10 @@ async function getSuggestionUsersByNumber(req, res) {
     }
 
 
-    const userPhone = await User.findById(user[0]._id).select('-password -isUser -_id');
+    const userPhone = await User.findById(user[0]._id).select('-password -isUser');
 
     const formattedData = {
+      id: userPhone._id,
       first_name: userPhone.first_name,
       last_name: userPhone.last_name,
       age: userPhone.age,

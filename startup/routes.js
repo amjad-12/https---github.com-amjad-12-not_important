@@ -65,7 +65,10 @@ module.exports = function (app) {
     
     // notifications
     app.use('/api/notifications', notificatios)
-    
+    app.use((err, req, res, next) => {
+        console.error(err.stack);
+        res.status(500).send('Something broke!');
+      });
     // app.use('/api/services/blood-donor', bloodDonor)
 
 

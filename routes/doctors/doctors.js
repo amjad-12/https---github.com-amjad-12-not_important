@@ -84,14 +84,17 @@ const uploadAnalysRequired = multer({ storage: storageAnalysRequiredFile });
 
 router.post('/upload-required-analys-file', [authDoctor, doctor], uploadAnalysRequired.single('file'), requiredAnalysFileController.uploadAnalysRequiredFile)
 router.get('/get-user-required-analys-files',[authUser, user],  requiredAnalysFileController.getAnalysRequiredFilesForUser)
+router.post('/get-doctor-required-analys-files',[authDoctor, doctor],  requiredAnalysFileController.getAnalysisRequiredFilesDoctorHistory)
 router.get('/download-required-analys-file/:fileId', [authUser, user], requiredAnalysFileController.downloadAnalysRequiredFile)
 
 router.post('/upload-prescription-file', [authDoctor, doctor], uploadPrescription.single('file'), prescriptionFileController.uploadPrescriptionFile)
 router.get('/get-user-prescription-files',[authUser, user],  prescriptionFileController.getPrescriptionFilesForUser)
+router.post('/get-doctor-prescription-files',[authDoctor, doctor],  prescriptionFileController.getPrescriptionFilesDoctorHistory)
 router.get('/download-prescription-file/:fileId', [authUser, user], prescriptionFileController.downloadPrescriptionFile)
 
 router.post('/upload-medical-report-file', [authDoctor, doctor], uploadMedicalReport.single('file'), medicalReportFileController.uploadMedicalReportFile)
 router.get('/get-user-medical-report-files',[authUser, user],  medicalReportFileController.getMedicalReportFilesForUser)
+router.post('/get-doctor-medical-report-files',[authDoctor, doctor],  medicalReportFileController.getMedicalReportFilesDoctorHistory)
 router.get('/download-medical-report-file/:fileId', [authUser, user], medicalReportFileController.downloadMedicalReportFile)
 
 const upload = multer({ storage: storage })
@@ -130,6 +133,7 @@ router.get('/futureAppointmentsForDoctor', [authDoctor, doctor], appointmentCont
 router.get('/cancelledAppointmentByUserForDoctor', [authDoctor, doctor], appointmentController.listCancelledDatesByUserForDoctor)
 router.get('/cancelledAppointmentByDoctorForDoctor', [authDoctor, doctor], appointmentController.listCancelledDatesByDoctorForDoctor)
 router.get('/cancelledAppointmentByUserNotHimForDoctor', [authDoctor, doctor], appointmentController.listCancelledDatesByUserIncorrectForDoctor)
+router.post('/appointmentsDoctorHistory', [authDoctor, doctor], appointmentController.getAppointmentsForDoctorHistroy)
 router.put('/cancelAppointmentByDoctor/:appointmentId', [authDoctor, doctor], appointmentController.cancelAppointmentByDoctor)
 router.put('/completeFlagAppointmentByDoctor/:appointmentId', [authDoctor, doctor], appointmentController.completeFlagAppointmentByDoctor)
 
@@ -139,6 +143,7 @@ router.get('/currentSlot/:doctorId', [authUser, user], appointmentController.get
 router.get('/current-next-back-slot', [authDoctor, doctor], appointmentController.getCurrentSlotForDoctor)
 router.post('/mark-after-completed', [authDoctor, doctor], appointmentController.markAfterCompleted)
 router.post('/mark-last-uncompleted', [authDoctor, doctor], appointmentController.markLastNotCompleted)
+router.put('/toggle-clinic-status', [authDoctor, doctor], appointmentController.toggleClinicStatus)
 
 router.post('/create-doctor', doctorController.createDoctor)
 router.put('/edit-profile-doctor', [authDoctor, doctor], doctorController.editProfileDoctor)

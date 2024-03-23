@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 require('dotenv').config();
 const private_key = process.env.med_jwtPrivateKey
+// console.log(private_key)
+
 module.exports = function (req, res, next) {
     `// we get the x-auth-token from the header because we add it in the userController 
     // in createUser function`
@@ -12,6 +14,7 @@ module.exports = function (req, res, next) {
     // in the environment variable using config module and if the token was valid it will decode
     // it else it will raise an exception to tell the client this is invalid token
     try {
+        
         const decoded = jwt.verify(token, private_key);
         req.doctor = decoded;
         next()

@@ -159,6 +159,10 @@ const doctorSchema = new mongoose.Schema({
     bookingByUser: {
         type: Boolean,
         default: true,
+    },
+    isClinicOpen: {
+        type: Boolean,
+        default: true,
     }
 });
 
