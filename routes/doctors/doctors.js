@@ -112,6 +112,7 @@ router.get('/available-slots-for-user/:doctorId', [authUser, user], appointmentC
 router.get('/available-slots-for-doctor', [authDoctor, doctor], appointmentController.getSlotsStatusForDoctorByToday)
 router.get('/slots-fake', appointmentController.getslotsFake)
 router.post('/appointments/book', [authUser, user], appointmentController.makeAppointmentNew)
+// router.post('/:doctorId/appointments/make-and-approve', appointmentController.makeAppointmentAndByDoctorForUser)
 router.post('/:doctorId/appointments/make-and-approve', appointmentController.makeAppointmentAndByDoctorForUser)
 
 router.get('/cancelledAppointmentsByUser', [authUser, user], appointmentController.listCancelledDatesByUser)
