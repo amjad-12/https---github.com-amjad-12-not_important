@@ -105,6 +105,7 @@ router.delete('/login-assitant', [authDoctor, doctor], assistantDoctorController
 router.get('/get-doctor-assitant', [authDoctor, doctor], assistantDoctorController.getDoctorAssistants)
 
 router.put('/schedule', [authDoctor, doctor], appointmentController.editSchedule)
+// router.put('/schedule', [authDoctor, doctor], appointmentController.editSchedule)
 router.get('/availability/:doctorId', appointmentController.getAvailability)
 router.get('/availableslots/:doctorId', appointmentController.getAvailableSlotsOnDays)
 router.get('/available-slots-for-user/:doctorId', [authUser, user], appointmentController.getslots)
